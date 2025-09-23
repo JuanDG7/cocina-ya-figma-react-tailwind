@@ -1,2 +1,27 @@
 @import "tailwindcss";
 @config "../tailwind.config.js";
+@import "@fontsource/work-sans/400.css"; /* Regular */
+@import "@fontsource/work-sans/500.css"; /* Regular */
+@import "@fontsource/work-sans/600.css"; /* Regular */
+@import "@fontsource/raleway/500.css"; /* Regular */
+
+@layer base {
+  :root {
+    --color-primary: 342 64% 33%; /* bordeaux 8B1E3F */
+    --color-secondary: 46 100% 68%; /* amarillo */
+    --color-navbar: 48 83% 89%; /* navbar / fondos */
+    --color-text-primary: 0 0% 10%; /* texto negro hex 1A1A1A */
+    --color-text-secondary: 0 0% 69%; /* texto gris claro */
+    --color-text-secondary-v2: 0 0% 47%; /* texto gris claro */
+  }
+}
+
+@layer components {
+  .label {
+    @apply font-worksans text-oscuro text-[16px] font-[500] block mb-[5px];
+  }
+
+  .input {
+    @apply w-full border p-5  rounded-sm h-[45px] bg-white text-oscuro placeholder:text-grisclaro/80  text-[14px] font-worksans font-[400];
+  }
+}

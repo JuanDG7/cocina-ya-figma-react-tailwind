@@ -1,4 +1,5 @@
 export default {
+  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
       screens: {
@@ -7,9 +8,16 @@ export default {
         "668px": "668px",
       },
       colors: {
-        brand: {
-          light2222: "#0fa9af",
-        },
+        primary: "hsl(var(--color-primary) / <alpha-value>)",
+        secondary: "hsl(var(--color-secondary) / <alpha-value>)",
+        navbar: "hsl(var(--color-navbar) / <alpha-value>)",
+        oscuro: "hsl(var(--color-text-primary) / <alpha-value>)",
+        grisclaro: "hsl(var(--color-text-secondary) / <alpha-value>)",
+        grisoscuro: "hsl(var(--color-text-secondary-v2) / <alpha-value>)",
+      },
+      fontFamily: {
+        worksans: ["Work Sans", "sans-serif"],
+        raleway: ["Raleway", "sans-serif"],
       },
     },
   },
