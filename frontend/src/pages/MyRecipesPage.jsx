@@ -3,17 +3,17 @@ import { useNavigate, Link } from "react-router-dom";
 import Button from "../components/Button";
 
 import IconLeftArrow from "../assets/icons/icon-left-arrow.svg";
-import EditIcon from "../assets/icons/icon-edit.svg";
+import EditIcon from "../assets/icons/icon-edit-document.svg";
 import FireIcon from "../assets/icons/icon-fire.svg";
 import ClockIcon from "../assets/icons/icon-clock.svg";
 import MealIcon from "../assets/icons/icon-meal.svg";
 import Carbonata from "/img/recipes/Carbonara3xImageHolder.webp";
 
-export default function FavoriteRecipePage() {
+export default function MyRecipesPage() {
   const navigate = useNavigate();
   return (
     <>
-      <section className="w-full mx-auto min-h-dvh overflow-y-auto pb-20 ">
+      <div>
         {/*  Header del top*/}
         <header className=" pt-10 pr-4 pb-4 pl-4 mb-8 bg-[url(/img/background.svg)] rounded-b-2xl bg-cover bg-center">
           <div className=" flex justify-between items-center">
@@ -36,7 +36,7 @@ export default function FavoriteRecipePage() {
         <Link to="#" className="flex flex-col  items-center gap-2  w-full">
           {/*CARDD*/}
           <div
-            className=" w-full  p-5 max-w-screen-lg rounded-2xl border border-black/5 bg-white flex flex-col items-center   shadow-[0_0_6px_rgba(0,0,0,0.14)]
+            className="p-5 w-[95%] rounded-2xl border border-black/5 bg-white flex flex-col items-center   shadow-[0_0_6px_rgba(0,0,0,0.14)]
 "
           >
             <img
@@ -48,7 +48,7 @@ export default function FavoriteRecipePage() {
             <div className="self-start mb-10">
               {" "}
               <h1 className="text-[18px] leading-[22px] text-oscuro font-medium mt-2">
-                Spagueti ala carbonaradd
+                Spagueti ala carbonarddadd
               </h1>
               <div className="flex flex-row justify-between mt-2 text-[12px] leading-[12px] font-normal text-oscuro  font-worksans items-center pb-3">
                 <span className="inline-flex items-center gap-1">
@@ -80,7 +80,7 @@ export default function FavoriteRecipePage() {
             </div>
           </div>
         </Link>
-      </section>
+      </div>
     </>
   );
 }

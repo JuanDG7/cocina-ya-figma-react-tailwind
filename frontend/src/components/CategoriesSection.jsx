@@ -37,8 +37,7 @@ export default function CategoriesPage({ children }) {
         <Link
           to="/categories"
           aria-label="Ver todas las categorías"
-          className="text-[20px] leading-[26x] font-medium text-primary
-                    "
+          className="text-[20px] leading-[26x] font-medium text-primary"
         >
           View All
         </Link>

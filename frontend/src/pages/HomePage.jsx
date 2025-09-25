@@ -1,5 +1,3 @@
-import BottomNav from "../components/BottomNav";
-
 import logoWebp from "../assets/logo-cocinaya.webp";
 import logoPng from "../assets/logo-cocinaya.png";
 import SearchIcon from "../assets/icons/icon-search.svg";
@@ -10,7 +8,7 @@ import PopularRecipesSection from "../components/PopularRecipesSection";
 export default function HomePage() {
   return (
     <>
-      <main className="w-full mx-auto min-h-dvh overflow-y-auto ">
+      <div>
         {/* HEADER  */}
         <header className=" pt-10 pr-4 pb-4 pl-4 bg-[url(/img/background.svg)] rounded-b-2xl bg-cover bg-center">
           {/*  logo + ICON-USER.SVG */}
@@ -53,9 +51,7 @@ export default function HomePage() {
           {/* Populares */}{" "}
           <PopularRecipesSection>Recetas Populares</PopularRecipesSection>{" "}
         </section>
-        <BottomNav />
-        {/* NAV inferior (placeholder) */}
-      </main>
+      </div>
     </>
   );
 }

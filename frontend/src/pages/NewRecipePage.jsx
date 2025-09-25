@@ -1,7 +1,5 @@
 import { useNavigate } from "react-router-dom";
 
-import BottomNav from "../components/BottomNav";
-
 import HeartOutlineIcon from "../assets/icons/icon-heart-outline.svg";
 import IconLeftArrow from "../assets/icons/icon-left-arrow.svg";
 import CameraIcon from "../assets/icons/icon-camera.svg";
@@ -13,7 +11,7 @@ export default function NewRecipePage() {
   return (
     <>
       {/* Frame  */}
-      <main className="w-full mx-auto min-h-dvh overflow-y-auto pb-35 ">
+      <div>
         {/*  Header del top*/}
         <header className=" pt-10 pr-4 pb-4 pl-4 mb-8 bg-[url(/img/background.svg)] rounded-b-2xl bg-cover bg-center">
           <div className=" flex justify-between items-center">
@@ -236,8 +234,7 @@ export default function NewRecipePage() {
             </form>
           </div>
         </section>
-        <BottomNav />
-      </main>
+      </div>
     </>
   );
 }

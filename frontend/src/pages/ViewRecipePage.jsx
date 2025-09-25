@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 
-import BottomNav from "../components/BottomNav";
 import Button from "../components/Button";
 
 import HeartOutlineIcon from "../assets/icons/icon-heart-outline.svg";
@@ -16,11 +15,11 @@ import ingrediente5 from "/img/ingredientes/ingrediente5.webp";
 import ingrediente6 from "/img/ingredientes/ingrediente6.webp";
 import Carbonata from "/img/recipes/Carbonara3xImageHolder.webp";
 
-export default function NewRecipePage() {
+export default function ViewRecipePage() {
   const navigate = useNavigate();
   return (
     <>
-      <section className="w-full mx-auto min-h-dvh overflow-y-auto pb-35 ">
+      <div>
         {/*  Header del top*/}
         <header className=" pt-10 pr-4 pb-4 pl-4 mb-8 bg-[url(/img/background.svg)] rounded-b-2xl bg-cover bg-center">
           <div className=" flex justify-between items-center">
@@ -175,15 +174,13 @@ export default function NewRecipePage() {
               </div>
             </li>
           </ol>
-          <div className="w-full mb-28  ">
+          <div className="w-full mb-28 text-center ">
             <Button className="" variant="secondary">
               Modificar Receta
             </Button>{" "}
           </div>
         </div>
-
-        <BottomNav />
-      </section>
+      </div>
     </>
   );
 }
