@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import LinkButton from "../components/LinkButton";
+
 import EyeOnIcon from "../assets/icons/icon-mage_eye.svg";
 import EyeOffIcon from "../assets/icons/icon-mage_eye-off.svg";
 
@@ -46,6 +48,9 @@ export default function LoginPage() {
                 id="email"
                 placeholder="example@gmail.com"
                 className="input"
+                inputMode="email"
+                autoCapitalize="none"
+                autoCorrect="off"
               />
             </div>
             {/* Password*/}
@@ -62,6 +67,7 @@ export default function LoginPage() {
                   name="password"
                   id="password"
                   placeholder="**************"
+                  autoComplete="current-password"
                 />
                 <button
                   type="button"

@@ -11,7 +11,7 @@ export default function BottomNav() {
       <div className="relative ">
         {/* FAB */}
         <Link
-          to="/new-recipe"
+          to="/recipes/new"
           className="absolute -top-12 left-1/2 -translate-x-1/2 size-24 flex items-center justify-center"
           aria-label="Agregar"
         >
@@ -33,7 +33,7 @@ export default function BottomNav() {
             </NavLink>
           </li>
           <li className="flex justify-center">
-            <NavLink to="/notification">
+            <NavLink to="/recipes">
               {({ isActive }) => (
                 <PublicSearch
                   active={isActive}

@@ -1,13 +1,13 @@
 import { useNavigate, Link } from "react-router-dom";
 
-import Button from "../components/Button";
+import LinkButton from "../components/LinkButton";
 
 import IconLeftArrow from "../assets/icons/icon-left-arrow.svg";
 import EditIcon from "../assets/icons/icon-edit-document.svg";
 import FireIcon from "../assets/icons/icon-fire.svg";
 import ClockIcon from "../assets/icons/icon-clock.svg";
 import MealIcon from "../assets/icons/icon-meal.svg";
-import Carbonata from "/img/recipes/Carbonara3xImageHolder.webp";
+import Carbonata from "/img/recipes/carbonara3x.webp";
 
 export default function MyRecipesPage() {
   const navigate = useNavigate();
@@ -71,12 +71,12 @@ export default function MyRecipesPage() {
             </div>
             {/* BOTONES */}
             <div className="mt-1 grid w-full grid-cols-2 gap-3">
-              <Button variant="primary" className="w-full">
+              <LinkButton variant="primary" className="w-full">
                 Visualizar
-              </Button>
-              <Button variant="tertiary" className="w-full">
+              </LinkButton>
+              <LinkButton variant="tertiary" className="w-full">
                 Editar receta
-              </Button>
+              </LinkButton>
             </div>
           </div>
         </Link>

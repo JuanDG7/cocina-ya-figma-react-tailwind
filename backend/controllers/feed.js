@@ -1,12 +1,9 @@
 exports.getPosts = (req, res, next) => {
   res.status(200).json({
-    posts: [
-      {
-        title: "First Post",
-        content: "This is the first post!",
-        imageUrl: "images/carbonara-cremosa.webp",
-      },
-    ],
+    title: "First Post",
+    calorias: "This is the first post!",
+    tiempo: "images/carbonara-cremosa.webp",
+    porciones: "5 porciones",
   });
 };
 

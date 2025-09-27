@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
+import LinkButton from "../components/LinkButton";
+
 import HeartOutlineIcon from "../assets/icons/icon-heart-outline.svg";
 import IconLeftArrow from "../assets/icons/icon-left-arrow.svg";
 import CameraIcon from "../assets/icons/icon-camera.svg";
@@ -218,15 +220,15 @@ export default function EditRecipePage() {
                   <div className="flex gap-4">
                     <button
                       type="submit"
-                      className="flex-1 bg-secondary py-[12px] text-white rounded-full font-worksans font-[500] text-[16px]"
+                      className="flex-1 bg-primary py-[12px] text-white rounded-full font-worksans font-[500] text-[16px]"
                     >
-                      Iniciar sesión
+                      Borrar receta
                     </button>
                     <button
                       type="submit"
                       className="flex-1 bg-secondary py-[12px] text-white rounded-full font-worksans font-[500] text-[16px]"
                     >
-                      Iniciar sesión
+                      Modificar receta
                     </button>
                   </div>
                 </div>

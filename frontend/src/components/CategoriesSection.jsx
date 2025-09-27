@@ -42,7 +42,6 @@ export default function CategoriesPage({ children }) {
           View All
         </Link>
       </div>
-
       {/* Cards */}
       <ul
         className="

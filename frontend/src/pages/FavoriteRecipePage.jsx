@@ -1,13 +1,11 @@
 import { useNavigate, Link } from "react-router-dom";
 
-import Button from "../components/Button";
-
 import IconLeftArrow from "../assets/icons/icon-left-arrow.svg";
 import HeartOutlineIcon from "../assets/icons/icon-heart-outline.svg";
 import FireIcon from "../assets/icons/icon-fire.svg";
 import ClockIcon from "../assets/icons/icon-clock.svg";
 import MealIcon from "../assets/icons/icon-meal.svg";
-import Carbonata from "/img/recipes/Carbonara3xImageHolder.webp";
+import Carbonata from "/img/recipes/carbonara3x.webp";
 
 export default function FavoriteRecipePage() {
   const navigate = useNavigate();
@@ -33,7 +31,7 @@ export default function FavoriteRecipePage() {
             <div className="h-11 w-11" aria-hidden />{" "}
           </div>
         </header>
-        <Link to="#" className="flex flex-col items-center gap-2  w-full">
+        <div to="#" className="flex flex-col items-center gap-2  w-full">
           {/*CARDD*/}
           <div
             className="  w-[95%] p-5  rounded-2xl border border-black/5 bg-white flex flex-col items-center   shadow-[0_0_6px_rgba(0,0,0,0.14)]
@@ -70,11 +68,11 @@ export default function FavoriteRecipePage() {
               </div>{" "}
             </div>
             {/* BOTON VER RECETA */}
-            <Button className="mt-1 w-full max-w-md" to="#">
+            <button type="button" className="mt-1 w-full max-w-md" to="#">
               Quitar de favoritos
-            </Button>
+            </button>
           </div>
-        </Link>
+        </div>
       </div>
     </>
   );

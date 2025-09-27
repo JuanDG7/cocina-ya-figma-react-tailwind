@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 
-import Button from "../components/Button";
+import { useParams } from "react-router-dom";
+
+import LinkButton from "../components/LinkButton";
 
 import HeartOutlineIcon from "../assets/icons/icon-heart-outline.svg";
 import IconLeftArrow from "../assets/icons/icon-left-arrow.svg";
@@ -13,13 +15,16 @@ import ingrediente3 from "/img/ingredientes/ingrediente3.webp";
 import ingrediente4 from "/img/ingredientes/ingrediente4.webp";
 import ingrediente5 from "/img/ingredientes/ingrediente5.webp";
 import ingrediente6 from "/img/ingredientes/ingrediente6.webp";
-import Carbonata from "/img/recipes/Carbonara3xImageHolder.webp";
+import Carbonata from "/img/recipes/carbonara3x.webp";
 
 export default function ViewRecipePage() {
   const navigate = useNavigate();
+  const params = useParams();
+
   return (
     <>
       <div>
+        {params.productId}
         {/*  Header del top*/}
         <header className=" pt-10 pr-4 pb-4 pl-4 mb-8 bg-[url(/img/background.svg)] rounded-b-2xl bg-cover bg-center">
           <div className=" flex justify-between items-center">
@@ -175,9 +180,9 @@ export default function ViewRecipePage() {
             </li>
           </ol>
           <div className="w-full mb-28 text-center ">
-            <Button className="" variant="secondary">
+            <LinkButton className="" variant="secondary">
               Modificar Receta
-            </Button>{" "}
+            </LinkButton>{" "}
           </div>
         </div>
       </div>

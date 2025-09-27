@@ -31,6 +31,7 @@ export default function RegisterPage() {
                 id="nombre"
                 placeholder="John Doe"
                 className="input"
+                autoComplete="name"
               />
             </div>
 
@@ -46,6 +47,10 @@ export default function RegisterPage() {
                 id="email"
                 placeholder="example@gmail.com"
                 className="input"
+                autoComplete="username"
+                inputMode="email"
+                autoCapitalize="none"
+                autoCorrect="off"
               />
             </div>
 
@@ -63,6 +68,7 @@ export default function RegisterPage() {
                   name="password"
                   id="password"
                   placeholder="**************"
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"
@@ -95,6 +101,7 @@ export default function RegisterPage() {
                   name="confirmPassword"
                   id="confirmPassword"
                   placeholder="**************"
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"
@@ -122,7 +129,7 @@ export default function RegisterPage() {
             type="submit"
             className="mt-8 mb-[33px] mx-auto block bg-secondary py-[12px] w-full text-white rounded-full font-worksans font-[500] text-[16px]"
           >
-            Iniciar sesión
+            Crear Cuenta
           </button>
         </form>
         {/*  ----------------O INICIA SESION CON---------------------------- */}

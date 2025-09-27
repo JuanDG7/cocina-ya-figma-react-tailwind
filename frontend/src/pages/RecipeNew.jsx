@@ -143,13 +143,13 @@ export default function NewRecipePage() {
 
                   <div className="flex flex-col border border-gray-300 p-4 rounded-md">
                     {" "}
-                    <div class="flex items-center gap-4 w-full rounded-xl ">
+                    <div className="flex items-center gap-4 w-full rounded-xl ">
                       <span>1</span>
                       <div className="flex items-center w-full  ">
                         <input
                           type="text"
                           placeholder="Ej: Pon la mezcla en un molde"
-                          class="flex-1   placeholder-gray-400 "
+                          className="flex-1   placeholder-gray-400 "
                         />
 
                         <button className="text-rose-700 ">
@@ -157,11 +157,11 @@ export default function NewRecipePage() {
                         </button>
                       </div>
                     </div>
-                    <div class="flex items-center gap-4 w-full rounded-xl h-7 ">
+                    <div className="flex items-center gap-4 w-full rounded-xl h-7 ">
                       <span className="invisible">1 </span>
                       <div className="flex items-center w-full border-b-1"></div>
                     </div>
-                    <div class="flex items-center gap-4 w-full rounded-xl ">
+                    <div className="flex items-center gap-4 w-full rounded-xl ">
                       <span className="invisible">1</span>
                       <div className=" flex gap-4 ">
                         <img src={CameraIcon} alt="" />
@@ -174,13 +174,13 @@ export default function NewRecipePage() {
                   </div>
                   <div className="flex flex-col border border-gray-300 p-4 rounded-md ">
                     {" "}
-                    <div class="flex items-center gap-4 w-full rounded-xl ">
+                    <div className="flex items-center gap-4 w-full rounded-xl ">
                       <span>1</span>
                       <div className="flex items-center w-full  ">
                         <input
                           type="text"
                           placeholder="Ej: Pon la mezcla en un molde"
-                          class="flex-1   placeholder-gray-400 "
+                          className="flex-1   placeholder-gray-400 "
                         />
 
                         <button className="text-rose-700 ">
@@ -188,11 +188,11 @@ export default function NewRecipePage() {
                         </button>
                       </div>
                     </div>
-                    <div class="flex items-center gap-4 w-full rounded-xl h-7 ">
+                    <div className="flex items-center gap-4 w-full rounded-xl h-7 ">
                       <span className="invisible">1 </span>
                       <div className="flex items-center w-full border-b-1"></div>
                     </div>
-                    <div class="flex items-center gap-4 w-full rounded-xl ">
+                    <div className="flex items-center gap-4 w-full rounded-xl ">
                       <span className="invisible">1</span>
                       <div className=" flex gap-4 ">
                         <img src={CameraIcon} alt="" />
@@ -217,7 +217,7 @@ export default function NewRecipePage() {
                   />
                   <div className="flex gap-4">
                     <button
-                      type="submit"
+                      type="button"
                       className="flex-1 bg-primary py-[12px] text-white rounded-full font-worksans font-[500] text-[16px]"
                     >
                       Guardar en borrador
