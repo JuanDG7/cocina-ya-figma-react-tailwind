@@ -2,6 +2,7 @@ import { useRouteError } from "react-router-dom";
 
 export default function ErrorPage() {
   const error = useRouteError();
+  console.error(error);
 
   let title = "Error Standart madafaka!!";
   let message = "Algo salio mal...";
@@ -13,7 +14,8 @@ export default function ErrorPage() {
   }
   if (error.status === 404) {
     title = "PAGINA O RECURSO NO ENCONTRADO!!";
-    message = JSON.parse(error.data).message;
+
+    message = error.data;
   }
   return (
     <main className="w-full mx-auto min-h-dvh bg-primary">
