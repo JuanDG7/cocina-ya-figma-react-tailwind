@@ -7,7 +7,7 @@ import DocumentEditIcon from "./icons/DocumentEditIcon.jsx";
 import PlusIcon from "../assets/icons/icon-plus.svg";
 export default function BottomNav() {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50  lg:hidden ">
+    <nav className="fixed inset-x-0 bottom-0 z-50  max-w-screen-md mx-auto ">
       <div className="relative ">
         {/* FAB */}
         <Link

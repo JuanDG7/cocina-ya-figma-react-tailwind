@@ -54,9 +54,9 @@ export function IngredientList() {
                 handleChange(index, "amount", e.target.value);
               }}
             />
-            <img className="size-15" src={MovileNavIcon} alt="" />
+            <img className="size-12" src={MovileNavIcon} alt="" />
             <button type="button" onClick={() => removeIngredient(index)}>
-              <img className="size-8" src={RemoveIcon} alt="" />
+              <img className="size-16" src={RemoveIcon} alt="" />
             </button>
           </div>
         );

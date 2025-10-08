@@ -27,6 +27,13 @@ const RecipeSchema = new Schema(
         amount: { type: String, required: true },
       },
     ],
+    //Steps
+    steps: [
+      {
+        text: { type: String, trim: true, required: true },
+        photos: [{ type: String }],
+      },
+    ],
   },
   { timestamps: true }
 );

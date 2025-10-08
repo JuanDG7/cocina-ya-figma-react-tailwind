@@ -10,11 +10,11 @@ import { useState, useRef } from "react";
 import Modal from "../components/Modal";
 
 import MainPhotoPicker from "./MainPhotoPicker";
-import StepItem from "./StepItem";
+
 import { IngredientList } from "./IngredientList";
+import StepsList from "./StepList";
 
 export default function RecipeForm({ data, method }) {
-  const [steps, setSteps] = useState([0]); // empieza con 1 paso (índice 0)
   const [modalOpen, setModalOpen] = useState(false);
   const formRef = useRef(null);
   const submit = useSubmit();
@@ -217,34 +217,9 @@ export default function RecipeForm({ data, method }) {
           </fieldset>
           {/* INGREDIENTES*/}
           <IngredientList />
+          {/* PASOS para preparar */}
+          <StepsList />
 
-          <div className=" w-[95%] flex flex-col space-y-2 ">
-            <h2>Pasos para preparar</h2>
-
-            {steps.map((stepIndex) => (
-              <StepItem key={stepIndex} index={stepIndex} />
-            ))}
-
-            <div className="flex gap-3 mt-3">
-              <button
-                type="button"
-                className="flex-1 bg-secondary text-white py-2 rounded-full"
-                onClick={() => setSteps((prev) => [...prev, prev.length])}
-              >
-                + Agregar paso
-              </button>
-
-              {steps.length > 1 && (
-                <button
-                  type="button"
-                  className="flex-1 bg-rose-600 text-white py-2 rounded-full"
-                  onClick={() => setSteps((prev) => prev.slice(0, -1))}
-                >
-                  – Quitar último paso
-                </button>
-              )}
-            </div>
-          </div>
           <div className="w-[95%] space-y-5 pb-10">
             {" "}
             <label className="self-start font-worksans text-oscuro text-[16px] font-[500] block mb-[2px]">
