@@ -3,9 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import StepItem from "./StepItem";
 
 export default function StepsList() {
-  const [steps, setSteps] = useState([
-    { id: uuidv4(), text: "", photos: [] }, // photos: [{id, file, preview}]
-  ]);
+  const [steps, setSteps] = useState([{ id: uuidv4(), text: "", photo: null }]);
 
   const allURLs = useRef(new Set());
   useEffect(() => {
@@ -15,11 +13,12 @@ export default function StepsList() {
     };
   }, []);
 
-  const MAX_PHOTOS = 3;
-
+  // ➕ Agregar nuevo paso
   function addStep() {
-    setSteps((prev) => [...prev, { id: uuidv4(), text: "", photos: [] }]);
+    setSteps((prev) => [...prev, { id: uuidv4(), text: "", photo: null }]);
   }
+
+  // ✏️ Cambiar texto del paso
   function changeText(index, text) {
     setSteps((prev) => {
       const copy = [...prev];
@@ -27,72 +26,62 @@ export default function StepsList() {
       return copy;
     });
   }
+
+  // 🗑️ Eliminar paso completo
   function removeStep(index) {
     setSteps((prev) => {
       const copy = [...prev];
       const removed = copy.splice(index, 1)[0];
-      removed?.photos.forEach((p) => {
-        if (p.preview) {
-          URL.revokeObjectURL(p.preview);
-          allURLs.current.delete(p.preview);
-        }
-      });
-      return copy.length ? copy : [{ id: uuidv4(), text: "", photos: [] }];
+      if (removed?.photo?.preview) {
+        URL.revokeObjectURL(removed.photo.preview);
+        allURLs.current.delete(removed.photo.preview);
+      }
+      // Aseguramos que siempre haya al menos un paso
+      return copy.length ? copy : [{ id: uuidv4(), text: "", photo: null }];
     });
   }
 
-  function pickPhotos(stepIndex, fileList) {
-    if (!fileList || fileList.length === 0) return;
-    const files = Array.from(fileList);
+  // 📸 Seleccionar una foto (solo una)
+  function pickPhoto(stepIndex, file) {
+    if (!file) return;
+    const preview = URL.createObjectURL(file);
+    allURLs.current.add(preview);
 
     setSteps((prev) => {
       const copy = [...prev];
-      const step = copy[stepIndex];
-      const remaining = Math.max(0, MAX_PHOTOS - step.photos.length);
-      const selected = files.slice(0, remaining);
-
-      const newItems = selected.map((f) => {
-        const preview = URL.createObjectURL(f);
-        allURLs.current.add(preview);
-        return { id: uuidv4(), file: f, preview };
-      });
-
-      copy[stepIndex] = { ...step, photos: [...step.photos, ...newItems] };
+      copy[stepIndex] = { ...copy[stepIndex], photo: { file, preview } };
       return copy;
     });
   }
 
-  function removePhoto(stepIndex, photoId) {
+  // ❌ Quitar foto del paso
+  function removePhoto(stepIndex) {
     setSteps((prev) => {
       const copy = [...prev];
       const step = copy[stepIndex];
-      const target = step.photos.find((p) => p.id === photoId);
-      if (target?.preview) {
-        URL.revokeObjectURL(target.preview);
-        allURLs.current.delete(target.preview);
+      if (step.photo?.preview) {
+        URL.revokeObjectURL(step.photo.preview);
+        allURLs.current.delete(step.photo.preview);
       }
-      copy[stepIndex] = {
-        ...step,
-        photos: step.photos.filter((p) => p.id !== photoId),
-      };
+      copy[stepIndex] = { ...step, photo: null };
       return copy;
     });
   }
 
   return (
-    <div className="flex flex-col items-center   gap-4 w-[95%] ">
+    <div className="flex flex-col items-center gap-4 w-[95%] ">
       <h2>Pasos para preparar</h2>
 
       {steps.map((s, i) => (
         <div key={s.id} className="w-full  ">
           <StepItem
             index={i}
+            stepId={s.id}
             value={s.text}
-            photos={s.photos}
-            maxPhotos={MAX_PHOTOS}
+            photo={s.photo}
             onChange={changeText}
             onRemove={removeStep}
-            onPickPhotos={pickPhotos}
+            onPickPhoto={pickPhoto}
             onRemovePhoto={removePhoto}
           />
         </div>

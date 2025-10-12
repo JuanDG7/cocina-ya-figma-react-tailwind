@@ -252,4 +252,53 @@
 // const grupoA = alumnos.slice(0, 3);
 // const grupoB = alumnos.slice(3, 6);
 
-// console.log(alumnos);
+// console.log(grupoB);
+// const frutas = ["manzana", "pera", "banana", "kiwi", "uva"];
+
+// frutas.splice(2, 1, "mango", "naranja");
+
+// console.log(frutas);
+
+// const tareas = ["Lavar platos", "Cocinar", "Estudiar", "Pasear al perro"];
+
+// tareas.splice(1, 1);
+// tareas.splice(3, 0, "Entrenar");
+
+// console.log(tareas);
+// const alumnosA = ["Ana", "Luis", "María"];
+
+// const alumnosB = ["Pedro", "Lucía", "Carlos"];
+
+// const todos = alumnosA.concat(alumnosB);
+
+// const nums = [3, 20, 100, 5, -2, 0];
+// [...nums].sort((a, b) => a - b);
+// [...nums].sort((a, b) => b - a);
+
+// const productos = [
+//   { nombre: "Mouse", precio: 19.99 },
+//   { nombre: "Monitor", precio: 129.9 },
+//   { nombre: "Cable HDMI", precio: 7.5 },
+// ];
+// productos.sort((a, b) => a.precio - b.precio);
+// console.log(productos);
+
+// const personas = [
+//   { nombre: "Beto", edad: 30 },
+//   { nombre: "Ana", edad: 30 },
+//   { nombre: "Juan", edad: 25 },
+//   { nombre: "Luis", edad: 25 },
+// ];
+// personas.sort((a, b) => a.edad - b.edad || a.nombre.localeCompare(b.nombre));
+// console.log(personas);
+
+const items = [
+  { valor: 3 },
+  { valor: null },
+  { valor: 1 },
+  { valor: undefined },
+  { valor: 2 },
+];
+
+items.sort((a, b) => (a.valor == null) - b.valor || a.valor - b.valor);
+console.log(items);

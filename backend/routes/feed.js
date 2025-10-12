@@ -54,7 +54,7 @@ router.post(
   "/post",
   upload.fields([
     { name: "mainPhoto", maxCount: 1 },
-    { name: "photos", maxCount: 20 },
+    { name: "stepPhotos[]", maxCount: 20 },
   ]),
   // createRecipeValidators,
   recipeController.createPost

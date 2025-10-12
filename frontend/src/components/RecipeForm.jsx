@@ -279,6 +279,20 @@ export default function RecipeForm({ data, method }) {
 export async function action({ request, params }) {
   const data = await request.formData(); // RAW (string o null)
 
+  // 🧩 Debug opcional: mostrar todo el contenido antes de enviarlo
+  console.log("🧾 FormData enviado al backend:");
+  for (const [key, value] of data.entries()) {
+    if (value instanceof File) {
+      console.log(
+        `${key}:`,
+        value.name,
+        `(${value.type}, ${value.size} bytes)`
+      );
+    } else {
+      console.log(`${key}:`, value);
+    }
+  }
+
   let url = "http://localhost:8080/feed/post";
 
   if (request.method === "PATCH") {

@@ -4,15 +4,15 @@ import MovileNavIcon from "../assets/icons/icon-movile-nav.svg";
 
 export default function StepItem({
   index,
+  stepId,
   value = "",
-  photos = [], // [{ id, preview }]
-  maxPhotos = 3,
+  photo = null,
+
   onChange, // (index, text)
   onRemove, // (index)
-  onPickPhotos, // (index, FileList)
+  onPickPhoto, // (index, FileList)
   onRemovePhoto, // (index, photoId)
 }) {
-  const canAdd = photos.length < maxPhotos;
   const inputId = `photo-${index}`;
 
   return (
@@ -36,7 +36,7 @@ export default function StepItem({
               className="text-rose-700 "
               aria-label="Eliminar paso"
             >
-              <img className="size-8" src={RemoveIcon} alt="" />
+              <img className="size-8" src={RemoveIcon} alt="Eliminar paso" />
             </button>
           </div>
         </div>
@@ -52,48 +52,51 @@ export default function StepItem({
           <span className="invisible">1</span>
 
           <div className=" flex gap-4 items-center flex-wrap ">
-            {/* Miniaturas a la izquierda */}
-            {photos.map((p) => (
-              <div key={p.id} className="relative">
+            {/* SIEMPRE montados (se envían siempre) */}
+            <input type="hidden" name="photoId[]" value={stepId} />
+            <input
+              id={inputId}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onClick={(e) => (e.target.value = "")}
+              onChange={(e) => onPickPhoto(index, e.target.files[0])}
+              name="stepPhotos[]" /* ← debe coincidir con Multer */
+            />
+
+            {photo ? (
+              <div className="relative">
                 <img
-                  src={p.preview}
+                  src={photo.preview}
                   alt="Vista previa"
-                  className="h-24  w-24  object-cover rounded-md"
+                  className="h-24 w-24 object-cover rounded-md"
                 />
                 <button
                   type="button"
-                  onClick={() => onRemovePhoto(index, p.id)}
+                  onClick={() => onRemovePhoto(index)}
                   className="absolute -top-2 -right-2 bg-white border rounded-full p-0.5"
-                  title="Quitar foto"
                 >
                   <img className="size-4" src={RemoveIcon} alt="Quitar" />
                 </button>
-              </div>
-            ))}
 
-            {/* Label detrás de las miniaturas; desaparece al llegar al máximo */}
-            {canAdd && (
-              <>
+                {/* Reemplazar usando el MISMO input montado */}
                 <label
                   htmlFor={inputId}
-                  className="flex gap-4 items-center cursor-pointer select-none"
-                  title="Agregar foto"
+                  className="ml-3 cursor-pointer select-none"
+                  title="Cambiar foto"
                 >
-                  <img src={CameraIcon} alt="" />
-                  <p>Agregar foto</p>
+                  Cambiar foto
                 </label>
-                <input
-                  id={inputId}
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onClick={(e) => (e.target.value = "")}
-                  className="hidden"
-                  onChange={(e) => onPickPhotos(index, e.target.files)}
-                  name="photos"
-                />
-                <input type="hidden" name="photoStepId" value={index} />
-              </>
+              </div>
+            ) : (
+              <label
+                htmlFor={inputId}
+                className="flex gap-4 items-center cursor-pointer select-none"
+                title="Agregar foto"
+              >
+                <img src={CameraIcon} alt="" />
+                <p>Agregar foto</p>
+              </label>
             )}
           </div>
 

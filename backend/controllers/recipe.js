@@ -30,80 +30,73 @@ exports.createPost = (req, res, next) => {
     throw error;
   }
 
-  console.log(req.body);
-
-  const qq = req.files || [];
-
   // ✅ 1) Foto principal (mainPhoto)
-  const mainPhoto = req.files?.mainPhoto?.[0] || null;
+  const mainPhoto = req.files?.mainPhoto?.[0]?.path || null;
+  const stepPhotos = req.files?.["stepPhotos[]"] || [];
 
-  // ⚠️ 2) 'photos' puede venir como undefined, objeto único o array (photos/photoStepId que viene como input hidden)
-  let photosPath = [];
-  if (Array.isArray(req.files?.photos)) {
-    //es un array? si es array usar directamente
-    photosPath = req.files.photos;
-  } else if (req.files?.photos) {
-    //si NO es un array, convertirlo en uno!
-    photosPath = [req.files.photos]; // si vino solo una foto
+  // si no llegó, responde 422 (tu schema exige imageUrl)
+  if (!mainPhoto) {
+    return res
+      .status(422)
+      .json({ erroresBack: ["Falta la foto principal (mainPhoto)"] });
   }
-
-  // ✅ 3) IDs de pasos
-  const rawPhotoStepId = req.body.photoStepId;
-  const photoStepIds = Array.isArray(rawPhotoStepId)
-    ? rawPhotoStepId
-    : rawPhotoStepId
-    ? [rawPhotoStepId]
-    : [];
-
-  // ✅ 4) Agrupar fotos por paso
-  const stepPhotoMap = {};
-  if (photosPath.length > 0 && photoStepIds.length > 0) {
-    photosPath.forEach((file, index) => {
-      const stepId = photoStepIds[index];
-      if (!stepPhotoMap[stepId]) stepPhotoMap[stepId] = [];
-      stepPhotoMap[stepId].push(file.path);
-    });
-  }
-
-  const stepText = req.body.stepText;
-  // ✅ 5) Crear pasos con sus fotos y textos
-  const recipeSteps = photoStepIds.map((id, idx) => ({
-    text: Array.isArray(stepText) ? stepText[idx] : stepText,
-    photos: stepPhotoMap[id] || [],
-  }));
 
   const titulo = req.body.titulo;
   const calorias = req.body.calorias;
   const tiempoMin = req.body.tiempoMin;
   const porciones = req.body.porciones;
   const descripcion = req.body.descripcion;
+  const categoria = req.body.categoria;
   const consejos = req.body.consejos;
-  const ingredientsName = req.body.ingredientsName;
-  const ingredientsAmount = req.body.ingredientsAmount;
+  const imageUrl = mainPhoto;
 
+  // arrays (normalizados)
+  const stepText = Array.isArray(req.body.stepText)
+    ? req.body.stepText
+    : req.body.stepText
+    ? [req.body.stepText]
+    : [];
+
+  const ingredientsName = Array.isArray(req.body.ingredientsName)
+    ? req.body.ingredientsName
+    : req.body.ingredientsName
+    ? [req.body.ingredientsName]
+    : [];
+  const ingredientsAmount = Array.isArray(req.body.ingredientsAmount)
+    ? req.body.ingredientsAmount
+    : req.body.ingredientsAmount
+    ? [req.body.ingredientsAmount]
+    : [];
+
+  // ingredientes
   if (ingredientsName.length !== ingredientsAmount.length) {
     return res.status(422).json({ erroresBack: "ingredientes desalineados" });
   }
-
   const ingredients = ingredientsName
-    .map((name, index) => {
-      return {
-        name: String(name).trim(),
-        amount: ingredientsAmount[index].trim(),
-      };
-    })
+    .map((name, index) => ({
+      name: String(name).trim(),
+      amount: String(ingredientsAmount[index] || "").trim(),
+    }))
     .filter((x) => x.name || x.amount);
 
+  // 🪄 6) Armar pasos por índice (1 foto por paso)
+  const steps = stepText.map((text, i) => ({
+    text: String(text || "").trim(),
+    photos: stepPhotos[i] ? [stepPhotos[i].path] : [],
+  }));
+
+  console.log(steps);
   const recipe = new Recipe({
     titulo,
     calorias,
     tiempoMin,
     porciones,
     descripcion,
+    categoria,
     consejos,
-    imageUrl: mainPhoto ? mainPhoto.path : null,
+    imageUrl: imageUrl,
     ingredients,
-    steps: recipeSteps,
+    steps,
   });
 
   recipe
