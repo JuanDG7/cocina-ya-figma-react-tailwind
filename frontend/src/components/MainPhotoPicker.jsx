@@ -42,8 +42,9 @@ export default function MainPhotoPicker() {
 
       {/* input que cubre TODA la tarjeta */}
       <input
-        id="photo"
-        name="photo"
+        id="mainPhoto"
+        key="main-photo"
+        name="mainPhoto"
         type="file"
         accept="image/*"
         onClick={(e) => (e.currentTarget.value = null)} // limpiar ANTES del diálogo POR SI EL USUARIO SELECCIONA 2 VCS EL MISMO ARCHIVO, si esto ONCHANGE NO DISPARA SI ES EL MISMO FILE

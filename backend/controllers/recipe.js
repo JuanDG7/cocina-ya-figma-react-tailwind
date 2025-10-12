@@ -3,36 +3,25 @@ const Recipe = require("../model/recipe");
 
 //ALL POSTS
 exports.getPosts = (req, res, next) => {
-  res.status(200).json([
-    {
-      id: "pasta-alfredo",
-      title: "Pasta Alfredoaaa cremosa",
-      img: "/img/recipes/carbonara3x.webp",
-      calorias: "152 kcal",
-      time: "25 min",
-      rating: 4.7,
-    },
-    {
-      id: "burger",
-      title: "Hamburguesa casera",
-      img: "/img/recipes/gyozas.webp",
-      calorias: "750 kcal",
-      time: "18 min",
-      rating: 4.5,
-    },
-    {
-      id: "ramen",
-      title: "Ramen express",
-      img: "/img/recipes/pizza-pepperoni.webp",
-      calorias: "1205 kcal",
-      time: "30 min",
-      rating: 4.6,
-    },
-  ]);
+  Recipe.find()
+    .then((recipe) => {
+      console.log(recipe),
+        res
+          .status(200)
+          .json({ message: "fetched post successfully.", recipes: recipe });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+        next(err);
+      }
+    });
 };
-
 //CRAETE POST
 exports.createPost = (req, res, next) => {
+  console.log("📩 Req Body:", req.body);
+  console.log("📷 Req Files:", req.files);
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error("Validacion fallo, data incorrecta");
@@ -40,13 +29,49 @@ exports.createPost = (req, res, next) => {
     error.errorDetails = errors.array();
     throw error;
   }
-  if (!req.file) {
-    const error = new Error("No image provided");
-    error.statusCode = 422;
-    throw error;
-  }
+
   console.log(req.body);
-  const imageUrl = req.file.path;
+
+  const qq = req.files || [];
+
+  // ✅ 1) Foto principal (mainPhoto)
+  const mainPhoto = req.files?.mainPhoto?.[0] || null;
+
+  // ⚠️ 2) 'photos' puede venir como undefined, objeto único o array (photos/photoStepId que viene como input hidden)
+  let photosPath = [];
+  if (Array.isArray(req.files?.photos)) {
+    //es un array? si es array usar directamente
+    photosPath = req.files.photos;
+  } else if (req.files?.photos) {
+    //si NO es un array, convertirlo en uno!
+    photosPath = [req.files.photos]; // si vino solo una foto
+  }
+
+  // ✅ 3) IDs de pasos
+  const rawPhotoStepId = req.body.photoStepId;
+  const photoStepIds = Array.isArray(rawPhotoStepId)
+    ? rawPhotoStepId
+    : rawPhotoStepId
+    ? [rawPhotoStepId]
+    : [];
+
+  // ✅ 4) Agrupar fotos por paso
+  const stepPhotoMap = {};
+  if (photosPath.length > 0 && photoStepIds.length > 0) {
+    photosPath.forEach((file, index) => {
+      const stepId = photoStepIds[index];
+      if (!stepPhotoMap[stepId]) stepPhotoMap[stepId] = [];
+      stepPhotoMap[stepId].push(file.path);
+    });
+  }
+
+  const stepText = req.body.stepText;
+  // ✅ 5) Crear pasos con sus fotos y textos
+  const recipeSteps = photoStepIds.map((id, idx) => ({
+    text: Array.isArray(stepText) ? stepText[idx] : stepText,
+    photos: stepPhotoMap[id] || [],
+  }));
+
   const titulo = req.body.titulo;
   const calorias = req.body.calorias;
   const tiempoMin = req.body.tiempoMin;
@@ -76,10 +101,11 @@ exports.createPost = (req, res, next) => {
     porciones,
     descripcion,
     consejos,
-    imageUrl,
-
+    imageUrl: mainPhoto ? mainPhoto.path : null,
     ingredients,
+    steps: recipeSteps,
   });
+
   recipe
     .save()
     .then((result) => {

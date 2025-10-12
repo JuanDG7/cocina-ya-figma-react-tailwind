@@ -3,7 +3,7 @@ import RemoveIcon from "../assets/icons/icon-remove.svg";
 import MovileNavIcon from "../assets/icons/icon-movile-nav.svg";
 
 export default function StepItem({
-  index = 0,
+  index,
   value = "",
   photos = [], // [{ id, preview }]
   maxPhotos = 3,
@@ -87,10 +87,12 @@ export default function StepItem({
                   type="file"
                   accept="image/*"
                   multiple
+                  onClick={(e) => (e.target.value = "")}
                   className="hidden"
                   onChange={(e) => onPickPhotos(index, e.target.files)}
-                  name="stepPhotos[]"
+                  name="photos"
                 />
+                <input type="hidden" name="photoStepId" value={index} />
               </>
             )}
           </div>

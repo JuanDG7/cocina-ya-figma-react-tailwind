@@ -2,15 +2,20 @@ const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
 
-const feedControllers = require("../controllers/recipe");
-const { upload } = require("../middleware/upload");
+const recipeController = require("../controllers/recipe");
+const upload = require("../middleware/upload");
 
 const createRecipeValidators = [
-  body("titulo").trim().notEmpty().withMessage("título es requerido"),
+  body("titulo")
+    .trim()
+    .notEmpty()
+    .withMessage("título es requerido")
+    .isLength({ min: 3, max: 100 })
+    .withMessage("El titulo debe tener 3 y 100 caracteres"),
   body("calorias")
     .trim()
     .notEmpty()
-    .withMessage("calorias es requerido")
+    .withMessage("las calorias son obligatorias")
     .bail()
     .customSanitizer((v) =>
       String(v)
@@ -34,19 +39,27 @@ const createRecipeValidators = [
     .toInt()
     .isInt({ min: 1, max: 100 })
     .withMessage("porciones 1–100"),
+  body("stepText")
+    .isArray()
+    .withMessage("Los pasos deben ser un array")
+    .custom((arr) => arr.length > 0)
+    .withMessage("Debe incluir al menos un paso"),
 ];
 
 //GET /feed/posts  //listar
-router.get("/posts", feedControllers.getPosts);
+router.get("/posts", recipeController.getPosts);
 
 //POST /feed/post   //crear
 router.post(
   "/post",
-  upload.single("photo"),
-  createRecipeValidators,
-  feedControllers.createPost
+  upload.fields([
+    { name: "mainPhoto", maxCount: 1 },
+    { name: "photos", maxCount: 20 },
+  ]),
+  // createRecipeValidators,
+  recipeController.createPost
 );
 
 //GET /feed/post/:recipeId   //listar 1
-router.get("/post/:recipeId", feedControllers.getPost);
+router.get("/post/:recipeId", recipeController.getPost);
 module.exports = router;

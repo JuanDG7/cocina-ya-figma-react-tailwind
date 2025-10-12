@@ -3,7 +3,6 @@ const app = express();
 const mongoose = require("mongoose");
 require("dotenv").config();
 const path = require("path");
-const multer = require("multer");
 
 const feedRoutes = require("./routes/feed");
 
@@ -29,7 +28,7 @@ app.use("/feed", feedRoutes);
 app.use((error, req, res, next) => {
   const status = error.statusCode || 500;
   const message = error.message;
-  const errores = error.errorDetails || null;
+  const errores = Array.isArray(error.errorDetails) ? error.errorDetails : [];
 
   console.log("📤 Respuesta enviada al frontend:", {
     status,

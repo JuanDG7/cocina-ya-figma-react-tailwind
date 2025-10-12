@@ -39,12 +39,15 @@ export default function Recipes() {
 export async function loader() {
   const response = await fetch("http://localhost:8080/feed/posts");
 
+  console.log("➡️ response", response);
   if (!response.ok) {
     throw new Response(JSON.stringify({ message: "Error en Recipes.jsx" }), {
       status: 500,
     });
   } else {
     const resData = await response.json();
-    return resData;
+    console.log("➡️ resData", resData);
+    console.log(resData);
+    return resData.recipes;
   }
 }
