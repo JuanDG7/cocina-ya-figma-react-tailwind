@@ -3,8 +3,12 @@ import { useState } from "react";
 import MovileNavIcon from "../assets/icons/icon-movile-nav.svg";
 import RemoveIcon from "../assets/icons/icon-remove.svg";
 
-export function IngredientList() {
-  const [ingredientes, setIngredients] = useState([{ name: "", amount: "" }]);
+export default function IngredientList({ initialIngredients = [] }) {
+  const [ingredientes, setIngredients] = useState(
+    initialIngredients.length > 0
+      ? initialIngredients
+      : [{ name: "", amount: "" }]
+  );
 
   function handleChange(index, field, value) {
     setIngredients((prevIng) => {

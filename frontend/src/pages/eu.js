@@ -292,13 +292,59 @@
 // personas.sort((a, b) => a.edad - b.edad || a.nombre.localeCompare(b.nombre));
 // console.log(personas);
 
-const items = [
-  { valor: 3 },
-  { valor: null },
-  { valor: 1 },
-  { valor: undefined },
-  { valor: 2 },
+// const items = [
+//   { valor: 3 },
+//   { valor: null },
+//   { valor: 1 },
+//   { valor: undefined },
+//   { valor: 2 },
+// ];
+
+// items.sort((a, b) => (a.valor == null) - b.valor || a.valor - b.valor);
+// console.log(items);
+
+// const numeros = [5, 10, 15, 20];
+// [...numeros].reverse();
+
+// const mensajes = ["Hola", "¿Cómo estás?", "Todo bien", "Nos vemos"];
+
+// [...mensajes].reverse();
+
+// const productos = [
+//   { nombre: "Mouse", precio: 19.99 },
+//   { nombre: "Monitor", precio: 129.9 },
+//   { nombre: "Cable HDMI", precio: 7.5 },
+// ];
+
+// const nuevo = productos.slice();
+// nuevo.sort((a, b) => a.precio - b.precio);
+// nuevo.reverse();
+// const permitidos = ["admin", "moderador", "editor"];
+// const r = permitidos.includes("invitado");
+// if (r) {
+//   console.log("invitado tiene permiso");
+// } else {
+//   console.log("invitado no tiene permiso");
+// }
+
+// const usuarios = [
+//   { id: 1, nombre: "Ana" },
+//   { id: 2, nombre: "Juan" },
+//   { id: 3, nombre: "Luis" },
+// ];
+
+// const n = usuarios.map((n) => n.nombre);
+// n.includes("Juan");
+
+// const frase = "Aprender JavaScript es divertido";
+// frase.includes("Javascript");
+
+const productos = [
+  "Mouse gamer",
+  "Teclado mecánico",
+  "Cable USB",
+  "Mouse inalámbrico",
 ];
 
-items.sort((a, b) => (a.valor == null) - b.valor || a.valor - b.valor);
-console.log(items);
+const newA = productos.filter((p) => p.toLowerCase().includes("mouse"));
+console.log(newA);

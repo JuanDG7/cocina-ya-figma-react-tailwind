@@ -62,4 +62,9 @@ router.post(
 
 //GET /feed/post/:recipeId   //listar 1
 router.get("/post/:recipeId", recipeController.getPost);
+
+// PUT /feed/post/:recipeId/edit
+
+router.put("/post/:recipeId", recipeController.updatePost);
+
 module.exports = router;

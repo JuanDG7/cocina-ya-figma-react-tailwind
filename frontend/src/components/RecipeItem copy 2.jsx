@@ -71,23 +71,81 @@ export default function RecipeItem({ recipe }) {
       <h2 className="px-4 pt-6 text-[18px] font-medium">Pasos</h2>
 
       <ol className="mt-4 mb-10 space-y-6 px-4">
-        {recipe.steps.map((step, i) => (
-          <li key={step._id} className="flex items-start gap-3">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-white font-semibold">
-              {i + 1}
-            </span>
-            <div className="flex flex-col gap-3">
-              <p className="text-[16px] leading-[24px]">{step.text}</p>
-              <div className="flex gap-3">
-                <img
-                  src={`http://localhost:8080/${step.photo[0]}`}
-                  alt="Ingredientes ajo, cebolla y panceta"
-                  className="h-28 w-28 rounded-lg object-cover"
-                />
-              </div>
+        <li className="flex items-start gap-3">
+          {/* Círculo con número */}
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-white font-semibold">
+            1
+          </span>
+          {/* Contenido del paso */}
+          <div className="flex flex-col gap-3">
+            <p className="text-[16px] leading-[24px]">
+              Ponemos agua en una cacerola, cuando rompa el hervor agregamos sal
+              a gusto y los fideos… agregamos la panceta cortada en cubitos.
+            </p>
+            <div className="flex gap-3">
+              <img
+                src={ingrediente1}
+                alt="Ingredientes ajo, cebolla y panceta"
+                className="h-28 w-28 rounded-lg object-cover"
+              />
+              <img
+                src={ingrediente2}
+                alt="Panceta cortada y paquete de fideos"
+                className="h-28 w-28 rounded-lg object-cover"
+              />
             </div>
-          </li>
-        ))}
+          </div>
+        </li>
+        <li className="flex items-start gap-3">
+          {/* Círculo con número */}
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-white font-semibold">
+            2
+          </span>
+          {/* Contenido del paso */}
+          <div className="flex flex-col gap-3">
+            <p className="text-[16px] leading-[24px]">
+              Ponemos agua en una cacerola, cuando rompa el hervor agregamos sal
+              a gusto y los fideos… agregamos la panceta cortada en cubitos.
+            </p>
+            <div className="flex gap-3">
+              <img
+                src={ingrediente3}
+                alt="Ingredientes ajo, cebolla y panceta"
+                className="h-28 w-28 rounded-lg object-cover"
+              />
+              <img
+                src={ingrediente4}
+                alt="Panceta cortada y paquete de fideos"
+                className="h-28 w-28 rounded-lg object-cover"
+              />
+            </div>
+          </div>
+        </li>
+        <li className="flex items-start gap-3">
+          {/* Círculo con número */}
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-white font-semibold">
+            3
+          </span>
+          {/* Contenido del paso */}
+          <div className="flex flex-col gap-3">
+            <p className="text-[16px] leading-[24px]">
+              Ponemos agua en una cacerola, cuando rompa el hervor agregamos sal
+              a gusto y los fideos… agregamos la panceta cortada en cubitos.
+            </p>
+            <div className="flex gap-3">
+              <img
+                src={ingrediente5}
+                alt="Ingredientes ajo, cebolla y panceta"
+                className="h-28 w-28 rounded-lg object-cover"
+              />
+              <img
+                src={ingrediente6}
+                alt="Panceta cortada y paquete de fideos"
+                className="h-28 w-28 rounded-lg object-cover"
+              />
+            </div>
+          </div>
+        </li>
       </ol>
       <div className="w-full mb-28 text-center ">
         <button

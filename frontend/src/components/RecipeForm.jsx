@@ -6,12 +6,10 @@ import {
   redirect,
 } from "react-router-dom";
 import { useState, useRef } from "react";
-
 import Modal from "../components/Modal";
-
 import MainPhotoPicker from "./MainPhotoPicker";
-
-import { IngredientList } from "./IngredientList";
+import IngredientList from "./IngredientList";
+import CategorySelector from "./CategorySelector";
 import StepsList from "./StepList";
 
 export default function RecipeForm({ data, method }) {
@@ -20,12 +18,10 @@ export default function RecipeForm({ data, method }) {
   const submit = useSubmit();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
-
   const actionData = useActionData();
   const errores = Array.isArray(actionData?.erroresBack)
     ? actionData.erroresBack
     : [];
-
   console.log("📥 Respuesta èn el Frontend:", errores);
 
   return (
@@ -40,10 +36,9 @@ export default function RecipeForm({ data, method }) {
             ))}
           </ul>
         )}
-
         <div className="flex flex-col gap-y-8 justify-center items-center w-full border border-black/20 rounded-2xl overflow-hidden shadow-[0_0px_3px_0_rgba(0,0,0,0.75)]">
           {/* === FOTO: botón gigante clickeable === */}
-          <MainPhotoPicker />
+          <MainPhotoPicker existingImage={data ? data.imageUrl : null} />
           {/* INPUT TITULO*/}
           <div className="w-[95%] ">
             <label className="label " htmlFor="titulo">
@@ -127,101 +122,11 @@ export default function RecipeForm({ data, method }) {
             />
           </div>
           {/*Categoria*/}
-          <fieldset className="w-[95%]">
-            <legend className="label">Categoría</legend>
-            <div className="flex flex-wrap gap-4">
-              <div>
-                <input
-                  id="cat-salado"
-                  name="categoria"
-                  type="radio"
-                  value="salado"
-                  className="peer sr-only"
-                  required
-                  defaultChecked
-                />
-                <label
-                  htmlFor="cat-salado"
-                  className="px-4 h-11 inline-flex items-center rounded-full border border-black/20 bg-white
-        text-[14px] cursor-pointer select-none hover:border-black/60 peer-checked:border-transparent peer-checked:bg-primary peer-checked:text-white"
-                >
-                  Salado
-                </label>
-              </div>
-              <div>
-                <input
-                  id="cat-dulce"
-                  name="categoria"
-                  type="radio"
-                  value="dulce"
-                  className="peer sr-only"
-                  required
-                />
-                <label
-                  htmlFor="cat-dulce"
-                  className="px-4 h-11 inline-flex items-center rounded-full border border-black/20 bg-white
-        text-[14px] cursor-pointer select-none hover:border-black/60 peer-checked:border-transparent peer-checked:bg-primary peer-checked:text-white"
-                >
-                  Dulce
-                </label>
-              </div>
-              <div>
-                <input
-                  id="cat-postre"
-                  name="categoria"
-                  type="radio"
-                  value="postre"
-                  className="peer sr-only"
-                  required
-                />
-                <label
-                  htmlFor="cat-postre"
-                  className="px-4 h-11 inline-flex items-center rounded-full border border-black/20 bg-white
-        text-[14px] cursor-pointer select-none hover:border-black/60 peer-checked:border-transparent peer-checked:bg-primary peer-checked:text-white"
-                >
-                  Postre
-                </label>
-              </div>
-              <div>
-                <input
-                  id="cat-caldos"
-                  name="categoria"
-                  type="radio"
-                  value="caldos"
-                  className="peer sr-only"
-                  required
-                />
-                <label
-                  htmlFor="cat-caldos"
-                  className="px-4 h-11 inline-flex items-center rounded-full border border-black/20 bg-white
-        text-[14px] cursor-pointer select-none hover:border-black/60 peer-checked:border-transparent peer-checked:bg-primary peer-checked:text-white"
-                >
-                  Caldos
-                </label>
-              </div>
-              <div>
-                <input
-                  id="cat-variados"
-                  name="categoria"
-                  type="radio"
-                  value="variados"
-                  className="peer sr-only"
-                  required
-                />
-                <label
-                  htmlFor="cat-variados"
-                  className="px-4 h-11 inline-flex items-center rounded-full border border-black/20 bg-white
-        text-[14px] cursor-pointer select-none hover:border-black/60 peer-checked:border-transparent peer-checked:bg-primary peer-checked:text-white"
-                >
-                  Variados
-                </label>
-              </div>
-            </div>
-          </fieldset>
+          <CategorySelector recipe={data} />
           {/* INGREDIENTES*/}
-          <IngredientList />
+          <IngredientList initialIngredients={data.ingredients} />
           {/* PASOS para preparar */}
-          <StepsList />
+          <StepsList initialSteps={data.steps} />
 
           <div className="w-[95%] space-y-5 pb-10">
             {" "}

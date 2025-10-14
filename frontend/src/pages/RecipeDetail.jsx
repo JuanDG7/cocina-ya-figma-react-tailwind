@@ -33,7 +33,7 @@ export default function ViewRecipePage() {
           </div>
         </header>
 
-        <RecipeItem recipe={data} />
+        <RecipeItem recipe={data.recipe} />
       </div>
     </>
   );

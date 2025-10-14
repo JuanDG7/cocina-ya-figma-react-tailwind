@@ -2,8 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import StepItem from "./StepItem";
 
-export default function StepsList() {
-  const [steps, setSteps] = useState([{ id: uuidv4(), text: "", photo: null }]);
+export default function StepsList({ initialSteps = [] }) {
+  const [steps, setSteps] = useState(
+    initialSteps.length > 0
+      ? initialSteps
+      : [{ id: uuidv4(), text: "", photo: null }]
+  );
+
+  console.log(initialSteps);
 
   const allURLs = useRef(new Set());
   useEffect(() => {

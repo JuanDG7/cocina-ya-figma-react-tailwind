@@ -24,7 +24,7 @@ export default function RecipeEdit() {
             </button>
             {/*TITULO Y CORAZON */}
             <div className="flex items-center gap-2">
-              <h1 className="text-[34px] font-semibold">Crear Receta</h1>
+              <h1 className="text-[34px] font-semibold">Editar Receta</h1>
               <img className="size-8" src={HeartOutlineIcon} alt="" />
             </div>
             {/* Spacer derecho del mismo ancho que el botón izquierdo */}
@@ -32,7 +32,7 @@ export default function RecipeEdit() {
           </div>
         </header>
         <section className="px-4  ">
-          <RecipeForm data={data} method="PATCH" />
+          <RecipeForm data={data.recipe} method="PATCH" />
         </section>
       </div>
     </>

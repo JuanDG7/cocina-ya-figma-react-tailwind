@@ -1,22 +1,27 @@
 import { useState, useEffect } from "react";
-
 import CameraIcon from "../assets/icons/icon-camera.svg";
-export default function MainPhotoPicker() {
-  const [preview, setPreview] = useState(null);
 
+export default function MainPhotoPicker({ existingImage }) {
+  const [preview, setPreview] = useState(
+    existingImage ? `http://localhost:8080/${existingImage}` : null
+  );
+
+  // 📂 Cuando el usuario elige un nuevo archivo
   const handleChange = (events) => {
     const file = events.target.files?.[0];
     if (!file) return;
 
+    // Limpia el blob anterior y genera uno nuevo
     setPreview((prev) => {
-      if (prev) URL.revokeObjectURL(prev); //libera memoria, libera el blop ocupado por el file
+      if (prev && prev.startsWith("blob:")) URL.revokeObjectURL(prev); //libera memoria, libera el blop ocupado por el file
       return URL.createObjectURL(file);
     });
   };
 
+  // 🧹 Limpieza de blobs cuando cambia o se desmonta el componente
   useEffect(() => {
     return () => {
-      if (preview) URL.revokeObjectURL(preview);
+      if (preview?.startsWith("blob:")) URL.revokeObjectURL(preview);
     };
   }, [preview]);
 
@@ -40,6 +45,11 @@ export default function MainPhotoPicker() {
         )}
       </div>
 
+      {/* 🧩 input hidden que conserva la imagen actual */}
+      {existingImage && (
+        <input type="hidden" name="imageUrl" value={existingImage} />
+      )}
+
       {/* input que cubre TODA la tarjeta */}
       <input
         id="mainPhoto"
@@ -49,7 +59,6 @@ export default function MainPhotoPicker() {
         accept="image/*"
         onClick={(e) => (e.currentTarget.value = null)} // limpiar ANTES del diálogo POR SI EL USUARIO SELECCIONA 2 VCS EL MISMO ARCHIVO, si esto ONCHANGE NO DISPARA SI ES EL MISMO FILE
         onChange={handleChange}
-        required
         className="absolute inset-0 opacity-0 cursor-pointer"
         style={{ WebkitAppearance: "none" }} //esta linea no importa pq el input esta invisible con opacity-0
         appearance="none" //esta linea no importa pq el input esta invisible con opacity-0

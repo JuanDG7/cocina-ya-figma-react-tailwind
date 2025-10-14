@@ -15,6 +15,8 @@ const RecipeSchema = new Schema(
 
     // Descripción opcional
     descripcion: { type: String, trim: true, default: "" },
+    //Categoria
+    categoria: { type: String, trim: true, default: "" },
 
     // Consejo extra (opcional)
     consejos: { type: String, trim: true, default: "" },
@@ -31,7 +33,7 @@ const RecipeSchema = new Schema(
     steps: [
       {
         text: { type: String, required: false },
-        photos: [{ type: String, required: false }],
+        photo: [{ type: String, required: false }],
       },
     ],
   },
