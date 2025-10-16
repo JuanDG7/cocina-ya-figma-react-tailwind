@@ -13,6 +13,7 @@ export default function StepItem({
   onRemovePhoto, // (index)
 }) {
   const inputId = `photo-${index}`;
+  console.log("🔍 StepItem value:", { index, value });
 
   return (
     <div className="flex flex-col space-y-2 mx-auto">
@@ -23,7 +24,7 @@ export default function StepItem({
           <div className="flex items-center w-full">
             <input
               type="text"
-              value={value}
+              value={value || ""}
               onChange={(e) => onChange(index, e.target.value)}
               placeholder="Ej: Pon la mezcla en un molde"
               className="flex-1 placeholder-gray-400 focus:outline-none focus:ring-0"

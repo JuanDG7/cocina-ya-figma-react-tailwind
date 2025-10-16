@@ -3,16 +3,19 @@ const app = express();
 const mongoose = require("mongoose");
 require("dotenv").config();
 const path = require("path");
+const cors = require("cors");
 
 const feedRoutes = require("./routes/feed");
 
 //CORS
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
-  next();
-});
+const corsOptions = {
+  origin: "http://localhost:5173", // solo permite peticiones desde este origen
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 200, // para que legacy browsers no fallen en preflight
+};
+
+app.use(cors(corsOptions)); // usa CORS en todas las rutas
 
 //PARSE
 app.use(express.json());

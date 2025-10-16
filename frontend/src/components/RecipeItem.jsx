@@ -1,4 +1,4 @@
-import { useSubmit } from "react-router-dom";
+import { useSubmit, useNavigation } from "react-router-dom";
 import { useState } from "react";
 import Modal from "./Modal";
 
@@ -7,10 +7,11 @@ import LinkButton from "./LinkButton";
 import FireIcon from "../assets/icons/icon-fire.svg";
 import ClockIcon from "../assets/icons/icon-clock.svg";
 import MealIcon from "../assets/icons/icon-meal.svg";
-import Carbonata from "/img/recipes/carbonara3x.webp";
 
 export default function RecipeItem({ recipe }) {
   const submit = useSubmit();
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
@@ -103,6 +104,7 @@ export default function RecipeItem({ recipe }) {
       </div>
       {modalOpen && (
         <Modal
+          isSubmitting={isSubmitting}
           title="Borrar esta receta?"
           description="Se borrara de tu biblioteca"
           confirmLabel="Borrar receta"

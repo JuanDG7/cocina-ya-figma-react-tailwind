@@ -2,6 +2,7 @@ const { validationResult } = require("express-validator");
 const Recipe = require("../model/recipe");
 const fs = require("fs");
 const path = require("path");
+const Post = require("../model/recipe");
 
 //ALL POSTS
 exports.getPosts = (req, res, next) => {
@@ -260,6 +261,31 @@ exports.updatePost = async (req, res, next) => {
     message: "Receta actualizada correctamente",
     recipe,
   });
+};
+
+//DELETE POST
+exports.deletePost = (req, res, next) => {
+  const recipeId = req.params.recipeId;
+  Post.findById(recipeId)
+    .then((post) => {
+      if (!post) {
+        const error = new Error("Could not find post. from exports.deletePost");
+        error.statusCode = 404;
+        throw error;
+      }
+      //Check logged in user
+      clearImage(post.imageUrl);
+      return Post.findByIdAndDelete(recipeId);
+    })
+    .then((result) => {
+      console.log(result);
+      res.status(200).json({ message: "Deleted post." });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+    });
 };
 
 const clearImage = (filePath) => {

@@ -74,4 +74,6 @@ router.put(
   recipeController.updatePost
 );
 
+// DELETE /feed/post/:recipeId
+router.delete("/post/:recipeId", recipeController.deletePost);
 module.exports = router;

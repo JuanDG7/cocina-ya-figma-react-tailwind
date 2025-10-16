@@ -58,13 +58,13 @@ export async function loader({ request, params }) {
 export async function action({ request, params }) {
   const recipeId = params.recipeId;
 
-  const response = await fetch("http://localhost:8080/feed/id" + recipeId, {
-    method: request.method,
+  const response = await fetch("http://localhost:8080/feed/post/" + recipeId, {
+    method: "DELETE",
   });
 
   if (!response.ok) {
     throw new Response(
-      JSON.stringify({ message: "error en el loader de RecipeDetail.jsx" }),
+      JSON.stringify({ message: "Error al eliminar la receta" }),
       { status: response.status }
     );
   }
