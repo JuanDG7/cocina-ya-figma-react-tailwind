@@ -34,7 +34,7 @@ export default function NewRecipePage() {
 
         <section className="px-4  ">
           {/* AQUI EMPIEZA */}
-          <RecipeForm method="POST" />
+          <RecipeForm method="post" />
         </section>
       </div>
     </>

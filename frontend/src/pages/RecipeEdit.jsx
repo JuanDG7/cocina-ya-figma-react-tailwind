@@ -32,7 +32,7 @@ export default function RecipeEdit() {
           </div>
         </header>
         <section className="px-4  ">
-          <RecipeForm data={data.recipe} method="PATCH" />
+          <RecipeForm data={data.recipe} method="put" />
         </section>
       </div>
     </>

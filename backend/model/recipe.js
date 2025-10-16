@@ -33,7 +33,7 @@ const RecipeSchema = new Schema(
     steps: [
       {
         text: { type: String, required: false },
-        photo: [{ type: String, required: false }],
+        photos: [{ type: String, required: false }],
       },
     ],
   },

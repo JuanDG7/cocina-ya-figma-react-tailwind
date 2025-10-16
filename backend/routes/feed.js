@@ -65,6 +65,13 @@ router.get("/post/:recipeId", recipeController.getPost);
 
 // PUT /feed/post/:recipeId/edit
 
-router.put("/post/:recipeId", recipeController.updatePost);
+router.put(
+  "/post/:recipeId",
+  upload.fields([
+    { name: "mainPhoto", maxCount: 1 },
+    { name: "stepPhotos[]", maxCount: 20 },
+  ]),
+  recipeController.updatePost
+);
 
 module.exports = router;

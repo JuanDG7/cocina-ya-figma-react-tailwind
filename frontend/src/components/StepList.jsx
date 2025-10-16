@@ -5,11 +5,20 @@ import StepItem from "./StepItem";
 export default function StepsList({ initialSteps = [] }) {
   const [steps, setSteps] = useState(
     initialSteps.length > 0
-      ? initialSteps
+      ? initialSteps.map((s) => ({
+          id: s.id || uuidv4(),
+          text: s.text || "",
+          photo: s.photos?.[0]
+            ? {
+                file: null,
+                preview: s.photos[0].startsWith("blob:")
+                  ? s.photos[0]
+                  : `http://localhost:8080/${s.photos[0]}`,
+              }
+            : null,
+        }))
       : [{ id: uuidv4(), text: "", photo: null }]
   );
-
-  console.log(initialSteps);
 
   const allURLs = useRef(new Set());
   useEffect(() => {
@@ -19,12 +28,10 @@ export default function StepsList({ initialSteps = [] }) {
     };
   }, []);
 
-  // ➕ Agregar nuevo paso
   function addStep() {
     setSteps((prev) => [...prev, { id: uuidv4(), text: "", photo: null }]);
   }
 
-  // ✏️ Cambiar texto del paso
   function changeText(index, text) {
     setSteps((prev) => {
       const copy = [...prev];
@@ -33,7 +40,6 @@ export default function StepsList({ initialSteps = [] }) {
     });
   }
 
-  // 🗑️ Eliminar paso completo
   function removeStep(index) {
     setSteps((prev) => {
       const copy = [...prev];
@@ -42,12 +48,10 @@ export default function StepsList({ initialSteps = [] }) {
         URL.revokeObjectURL(removed.photo.preview);
         allURLs.current.delete(removed.photo.preview);
       }
-      // Aseguramos que siempre haya al menos un paso
       return copy.length ? copy : [{ id: uuidv4(), text: "", photo: null }];
     });
   }
 
-  // 📸 Seleccionar una foto (solo una)
   function pickPhoto(stepIndex, file) {
     if (!file) return;
     const preview = URL.createObjectURL(file);
@@ -60,7 +64,6 @@ export default function StepsList({ initialSteps = [] }) {
     });
   }
 
-  // ❌ Quitar foto del paso
   function removePhoto(stepIndex) {
     setSteps((prev) => {
       const copy = [...prev];
@@ -74,12 +77,24 @@ export default function StepsList({ initialSteps = [] }) {
     });
   }
 
+  useEffect(() => {
+    console.log(
+      "🧠 Estado actual de pasos:",
+      steps.map((s, i) => ({
+        i,
+        id: s.id,
+        text: s.text,
+        preview: s.photo?.preview,
+      }))
+    );
+  }, [steps]);
+
   return (
-    <div className="flex flex-col items-center gap-4 w-[95%] ">
+    <div className="flex flex-col items-center gap-4 w-[95%]">
       <h2>Pasos para preparar</h2>
 
       {steps.map((s, i) => (
-        <div key={s.id} className="w-full  ">
+        <div key={s.id} className="w-full">
           <StepItem
             index={i}
             stepId={s.id}
@@ -93,12 +108,10 @@ export default function StepsList({ initialSteps = [] }) {
         </div>
       ))}
 
-      {/* Botón inferior (CTA) */}
       <button
         type="button"
         onClick={addStep}
         className="flex-1 bg-secondary p-[12px] mt-5 ml-auto text-white rounded-full font-worksans font-[500] text-[16px]"
-        aria-label="Agregar pasos"
       >
         + Agregar pasos
       </button>

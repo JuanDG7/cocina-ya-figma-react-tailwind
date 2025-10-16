@@ -7,33 +7,32 @@ export default function StepItem({
   stepId,
   value = "",
   photo = null,
-
   onChange, // (index, text)
   onRemove, // (index)
-  onPickPhoto, // (index, FileList)
-  onRemovePhoto, // (index, photoId)
+  onPickPhoto, // (index, File)
+  onRemovePhoto, // (index)
 }) {
   const inputId = `photo-${index}`;
 
   return (
-    <div className="flex flex-col space-y-2 mx-auto ">
+    <div className="flex flex-col space-y-2 mx-auto">
       <div className="flex flex-col border border-gray-300 p-4 rounded-md">
-        {/* FILA: texto + eliminar (igual layout) */}
-        <div className="flex items-center gap-4 w-full rounded-xl ">
+        {/* 🧾 FILA: texto + eliminar */}
+        <div className="flex items-center gap-4 w-full rounded-xl">
           <span>{index + 1}</span>
-          <div className="flex items-center w-full  ">
+          <div className="flex items-center w-full">
             <input
               type="text"
               value={value}
               onChange={(e) => onChange(index, e.target.value)}
               placeholder="Ej: Pon la mezcla en un molde"
-              className="flex-1   placeholder-gray-400 focus:outline-none focus:ring-0"
+              className="flex-1 placeholder-gray-400 focus:outline-none focus:ring-0"
               name="stepText[]"
             />
             <button
               type="button"
               onClick={() => onRemove(index)}
-              className="text-rose-700 "
+              className="text-rose-700"
               aria-label="Eliminar paso"
             >
               <img className="size-8" src={RemoveIcon} alt="Eliminar paso" />
@@ -41,19 +40,32 @@ export default function StepItem({
           </div>
         </div>
 
-        {/* SEPARADOR (usa border-b, no border-b-1) */}
-        <div className="flex items-center gap-4 w-full rounded-xl h-7 ">
+        {/* Separador */}
+        <div className="flex items-center gap-4 w-full rounded-xl h-7">
           <span className="invisible">1 </span>
           <div className="flex items-center w-full border-b"></div>
         </div>
 
-        {/* FILA: miniaturas + "Agregar foto" que se corre a la derecha */}
-        <div className="flex items-center gap-4 w-full rounded-xl ">
+        {/* 🖼️ Fila de foto */}
+        <div className="flex items-center gap-4 w-full rounded-xl">
           <span className="invisible">1</span>
 
-          <div className=" flex gap-4 items-center flex-wrap ">
-            {/* SIEMPRE montados (se envían siempre) */}
+          <div className="flex gap-4 items-center flex-wrap">
+            {/* ID del paso */}
             <input type="hidden" name="photoId[]" value={stepId} />
+
+            {/* URL actual de la foto */}
+            <input
+              type="hidden"
+              name="existingStepPhotos[]"
+              value={
+                photo?.preview?.startsWith("blob:")
+                  ? ""
+                  : photo?.preview.replace("http://localhost:8080/", "")
+              }
+            />
+
+            {/* Archivo nuevo (solo si el usuario elige uno) */}
             <input
               id={inputId}
               type="file"
@@ -61,7 +73,7 @@ export default function StepItem({
               className="hidden"
               onClick={(e) => (e.target.value = "")}
               onChange={(e) => onPickPhoto(index, e.target.files[0])}
-              name="stepPhotos[]" /* ← debe coincidir con Multer */
+              name="stepPhotos[]" // 👈 este nombre es el que Multer espera
             />
 
             {photo ? (
@@ -78,15 +90,6 @@ export default function StepItem({
                 >
                   <img className="size-4" src={RemoveIcon} alt="Quitar" />
                 </button>
-
-                {/* Reemplazar usando el MISMO input montado */}
-                <label
-                  htmlFor={inputId}
-                  className="ml-3 cursor-pointer select-none"
-                  title="Cambiar foto"
-                >
-                  Cambiar foto
-                </label>
               </div>
             ) : (
               <label
@@ -100,10 +103,10 @@ export default function StepItem({
             )}
           </div>
 
-          {/* Handle reordenar (misma posición) */}
+          {/* Placeholder para reordenar */}
           <button
             type="button"
-            className="text-rose-700 ml-auto "
+            className="text-rose-700 ml-auto"
             title="Reordenar"
           >
             <img className="size-10" src={MovileNavIcon} alt="" />

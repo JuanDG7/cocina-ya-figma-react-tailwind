@@ -5,7 +5,6 @@ import ClockIcon from "../assets/icons/icon-clock.svg";
 import MealIcon from "../assets/icons/icon-meal.svg";
 
 export default function RecipeList({ recipes }) {
-  console.log(`RecipeList🔥=${recipes}`);
   return (
     <ul className="flex flex-col  items-center gap-2  ">
       {recipes.map((recipe) => (
@@ -16,7 +15,7 @@ export default function RecipeList({ recipes }) {
         >
           {/*CARDD*/}
           <img
-            src={recipe.imageUrl}
+            src={`http://localhost:8080/${recipe.imageUrl}`}
             alt={recipe.titulo}
             className="w-full object-cover rounded-2xl "
           />

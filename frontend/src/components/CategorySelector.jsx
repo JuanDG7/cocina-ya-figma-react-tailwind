@@ -1,5 +1,4 @@
 export default function CategorySelector({ recipe }) {
-  console.log(recipe.categoria);
   return (
     <fieldset className="w-[95%]">
       <legend className="label">Categoría</legend>

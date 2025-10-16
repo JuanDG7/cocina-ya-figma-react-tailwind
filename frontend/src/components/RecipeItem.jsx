@@ -2,17 +2,11 @@ import { useSubmit } from "react-router-dom";
 import { useState } from "react";
 import Modal from "./Modal";
 
-import LinkButton from "../components/LinkButton";
+import LinkButton from "./LinkButton";
 
 import FireIcon from "../assets/icons/icon-fire.svg";
 import ClockIcon from "../assets/icons/icon-clock.svg";
 import MealIcon from "../assets/icons/icon-meal.svg";
-import ingrediente1 from "/img/ingredientes/ingrediente1.webp";
-import ingrediente2 from "/img/ingredientes/ingrediente2.webp";
-import ingrediente3 from "/img/ingredientes/ingrediente3.webp";
-import ingrediente4 from "/img/ingredientes/ingrediente4.webp";
-import ingrediente5 from "/img/ingredientes/ingrediente5.webp";
-import ingrediente6 from "/img/ingredientes/ingrediente6.webp";
 import Carbonata from "/img/recipes/carbonara3x.webp";
 
 export default function RecipeItem({ recipe }) {
@@ -21,7 +15,11 @@ export default function RecipeItem({ recipe }) {
 
   return (
     <div className="flex flex-col p-4 w-[90%] max-w-screen-lg mx-auto gap-y-8  items-start border border-black/20 rounded-2xl   shadow-[0_0px_3px_0_rgba(0,0,0,0.75)]">
-      <img className="object-cover rounded-xl  " src={Carbonata} alt="" />
+      <img
+        className="object-cover rounded-xl  "
+        src={`http://localhost:8080/${recipe.imageUrl}`}
+        alt=""
+      />
       <div>
         {" "}
         {/* Título */}
@@ -80,7 +78,7 @@ export default function RecipeItem({ recipe }) {
               <p className="text-[16px] leading-[24px]">{step.text}</p>
               <div className="flex gap-3">
                 <img
-                  src={`http://localhost:8080/${step.photo[0]}`}
+                  src={`http://localhost:8080/${step.photos[0]}`}
                   alt="Ingredientes ajo, cebolla y panceta"
                   className="h-28 w-28 rounded-lg object-cover"
                 />

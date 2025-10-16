@@ -124,9 +124,9 @@ export default function RecipeForm({ data, method }) {
           {/*Categoria*/}
           <CategorySelector recipe={data} />
           {/* INGREDIENTES*/}
-          <IngredientList initialIngredients={data.ingredients} />
+          <IngredientList initialIngredients={data?.ingredients || []} />
           {/* PASOS para preparar */}
-          <StepsList initialSteps={data.steps} />
+          <StepsList initialSteps={data?.steps || []} />
 
           <div className="w-[95%] space-y-5 pb-10">
             {" "}
@@ -165,15 +165,21 @@ export default function RecipeForm({ data, method }) {
       {modalOpen && (
         <Modal
           isSubmitting={isSubmitting}
-          title="Agregar esta receta?"
-          description="Se enviará a tu biblioteca. Podrás editarla después."
+          title={
+            method === "put" ? "¿Editar esta receta?" : "¿Agregar esta receta?"
+          }
+          description={
+            method === "put"
+              ? "Se actualizarán los datos de la receta existente."
+              : "Se enviará a tu biblioteca. Podrás editarla después."
+          }
           confirmLabel="Agregar Receta"
           cancelLabel="Cancelar"
           onClose={() => setModalOpen(false)}
           onConfirm={() => {
             if (!formRef.current) return;
             setModalOpen(false);
-            submit(formRef.current);
+            submit(formRef.current, { method: method });
           }}
         />
       )}
@@ -184,23 +190,16 @@ export default function RecipeForm({ data, method }) {
 export async function action({ request, params }) {
   const data = await request.formData(); // RAW (string o null)
 
-  // 🧩 Debug opcional: mostrar todo el contenido antes de enviarlo
-  console.log("🧾 FormData enviado al backend:");
-  for (const [key, value] of data.entries()) {
-    if (value instanceof File) {
-      console.log(
-        `${key}:`,
-        value.name,
-        `(${value.type}, ${value.size} bytes)`
-      );
-    } else {
-      console.log(`${key}:`, value);
-    }
+  console.log("🧾 Envío real de stepText y stepPhotos:");
+  for (const [k, v] of data.entries()) {
+    if (k === "stepText") console.log("📝", v);
+    if (k === "stepPhotos[]") console.log("📸", v.name);
   }
 
   let url = "http://localhost:8080/feed/post";
 
-  if (request.method === "PATCH") {
+  console.log("🧾 METHOD ES:", request.method);
+  if (request.method === "PUT") {
     const eventId = params.recipeId;
     url = "http://localhost:8080/feed/post/" + eventId;
   }
