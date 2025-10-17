@@ -6,6 +6,7 @@ const path = require("path");
 const cors = require("cors");
 
 const feedRoutes = require("./routes/feed");
+const authRoutes = require("./routes/auth");
 
 //CORS
 const corsOptions = {
@@ -14,7 +15,6 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
   optionsSuccessStatus: 200, // para que legacy browsers no fallen en preflight
 };
-
 app.use(cors(corsOptions)); // usa CORS en todas las rutas
 
 //PARSE
@@ -26,19 +26,23 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 
 //ROUTES
 app.use("/feed", feedRoutes);
+app.use("/auth", authRoutes);
 
 //MIDDLEWARE ERROR
 app.use((error, req, res, next) => {
   const status = error.statusCode || 500;
   const message = error.message;
-  const errores = Array.isArray(error.errorDetails) ? error.errorDetails : [];
+  const data = error.data;
 
-  console.log("📤 Respuesta enviada al frontend:", {
-    status,
-    message,
-    errores,
-  });
-  res.status(status).json({ message: message, erroresBack: errores });
+  console.log(
+    "📤 Respuesta enviada al frontend desde el MIDDLEWARE GLOBAL DE ERRORES:",
+    {
+      status,
+      message,
+      data: data,
+    }
+  );
+  res.status(status).json({ message: message, data: data });
 });
 
 mongoose.connect(process.env.MONGODB_URI).then((result) => {

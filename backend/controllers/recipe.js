@@ -1,8 +1,8 @@
 const { validationResult } = require("express-validator");
-const Recipe = require("../model/recipe");
+const Recipe = require("../models/recipe");
 const fs = require("fs");
 const path = require("path");
-const Post = require("../model/recipe");
+const Post = require("../models/recipe");
 
 //ALL POSTS
 //ALL POSTS (con paginación)
@@ -37,8 +37,8 @@ exports.createPost = (req, res, next) => {
   if (!errors.isEmpty()) {
     const error = new Error("Validacion fallo, data incorrecta");
     error.statusCode = 422;
-    error.errorDetails = errors.array();
-    throw error;
+    error.data = errors.array();
+    return next(error); // ✅ no rompe el flujo, pasa al manejador global
   }
 
   // ✅ 1) Foto principal (mainPhoto)
@@ -162,7 +162,7 @@ exports.updatePost = async (req, res, next) => {
   if (!errors.isEmpty()) {
     const error = new Error("Validación falló, datos incorrectos");
     error.statusCode = 422;
-    error.errorDetails = errors.array();
+    error.data = errors.array();
     return next(error);
   }
 
