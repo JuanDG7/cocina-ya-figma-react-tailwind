@@ -5,21 +5,29 @@ const path = require("path");
 const Post = require("../model/recipe");
 
 //ALL POSTS
-exports.getPosts = (req, res, next) => {
-  Recipe.find()
-    .then((recipe) => {
-      console.log(recipe),
-        res
-          .status(200)
-          .json({ message: "fetched post successfully.", recipes: recipe });
-    })
-    .catch((err) => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-        next(err);
-      }
+//ALL POSTS (con paginación)
+exports.getPosts = async (req, res, next) => {
+  try {
+    const currentPage = parseInt(req.query.page) || 1;
+    const perPage = 2; // 🔧 cantidad de recetas por página
+
+    const totalItems = await Recipe.find().countDocuments();
+
+    const recipes = await Recipe.find()
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
+
+    res.status(200).json({
+      message: "Fetched recipes successfully.",
+      recipes,
+      totalItems,
     });
+  } catch (err) {
+    if (!err.statusCode) err.statusCode = 500;
+    next(err);
+  }
 };
+
 //CRAETE POST
 exports.createPost = (req, res, next) => {
   console.log("📩 Req Body:", req.body);

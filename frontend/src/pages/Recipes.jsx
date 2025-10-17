@@ -7,7 +7,11 @@ import EditIcon from "../assets/icons/icon-edit-document.svg";
 
 export default function Recipes() {
   const navigate = useNavigate();
-  const data = useLoaderData();
+  const { recipes: data, totalItems, page } = useLoaderData();
+
+  const ITEMS_PER_PAGE = 2; // ajustá según tu backend
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+
   return (
     <>
       <div>
@@ -31,23 +35,41 @@ export default function Recipes() {
           </div>
         </header>
         <RecipeList recipes={data} />
+        {/* 🔹 Paginación */}
+        <div className="flex justify-center gap-4 mt-8 mb-12">
+          {page > 1 && (
+            <Link
+              to={`?page=${Number(page) - 1}`}
+              className="px-4 py-2 bg-gray-200 rounded-xl hover:bg-gray-300"
+            >
+              ← Anterior
+            </Link>
+          )}
+          {page < totalPages && (
+            <Link
+              to={`?page=${Number(page) + 1}`}
+              className="px-4 py-2 bg-gray-200 rounded-xl hover:bg-gray-300"
+            >
+              Siguiente →
+            </Link>
+          )}
+        </div>
       </div>
     </>
   );
 }
 
-export async function loader() {
-  const response = await fetch("http://localhost:8080/feed/posts");
+export async function loader({ request }) {
+  const url = new URL(request.url);
+  const page = url.searchParams.get("page") || 1;
 
-  console.log("➡️ response", response);
+  const response = await fetch(`http://localhost:8080/feed/posts?page=${page}`);
   if (!response.ok) {
     throw new Response(JSON.stringify({ message: "Error en Recipes.jsx" }), {
       status: 500,
     });
-  } else {
-    const resData = await response.json();
-    console.log("➡️ resData", resData);
-    console.log(resData);
-    return resData.recipes;
   }
+
+  const resData = await response.json();
+  return { recipes: resData.recipes, totalItems: resData.totalItems, page };
 }
