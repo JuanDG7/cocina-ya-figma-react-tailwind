@@ -46,10 +46,10 @@ const createRecipeValidators = [
     .withMessage("Debe incluir al menos un paso"),
 ];
 
-//GET /feed/posts  //listar
+//GET /recipe/posts  //listar
 router.get("/posts", recipeController.getPosts);
 
-//POST /feed/post   //crear
+//POST /recipe/post   //crear
 router.post(
   "/post",
   upload.fields([
@@ -60,10 +60,10 @@ router.post(
   recipeController.createPost
 );
 
-//GET /feed/post/:recipeId   //listar 1
+//GET /recipe/post/:recipeId   //listar 1
 router.get("/post/:recipeId", recipeController.getPost);
 
-// PUT /feed/post/:recipeId/edit
+// PUT /recipe/post/:recipeId/edit
 
 router.put(
   "/post/:recipeId",
@@ -74,6 +74,6 @@ router.put(
   recipeController.updatePost
 );
 
-// DELETE /feed/post/:recipeId
+// DELETE /recipe/post/:recipeId
 router.delete("/post/:recipeId", recipeController.deletePost);
 module.exports = router;

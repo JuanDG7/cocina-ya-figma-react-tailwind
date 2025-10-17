@@ -1,23 +1,50 @@
 import { useState } from "react";
+import { redirect, useNavigate } from "react-router-dom";
+import { Form } from "react-router-dom";
+import { useActionData } from "react-router-dom";
 
 import EyeOffIcon from "../assets/icons/icon-mage_eye-off.svg";
 import EyeOnIcon from "../assets/icons/icon-mage_eye.svg";
-
+import IconLeftArrow from "../assets/icons/icon-left-arrow.svg";
 import TermsCheckbox from "../components/TermsCheckbox";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const data = useActionData();
+
+  const navigate = useNavigate();
 
   return (
     <>
+      {data?.data && (
+        <ul className="text-red-500 text-sm mt-2 space-y-1">
+          {data.data.map((err) => (
+            <li key={err.msg}>{err.msg}</li>
+          ))}
+        </ul>
+      )}
       <div className="fixed inset-0 -z-10 bg-[url(/img/background.svg)] bg-cover bg-center" />
       <main className="w-full mx-auto px-10 min-h-dvh overflow-y-auto">
         <header className="font-raleway text-[24px] text-center pt-19 font-semibold">
-          Crear cuenta
+          <div className=" flex justify-between items-center">
+            <button
+              className="h-11 w-11 flex items-center justify-center "
+              onClick={() => navigate(-1)}
+            >
+              {/*FLECHITA A LA IZQUIERDA*/}
+              <img className="h-[24px] w-[24px]" src={IconLeftArrow} alt="" />
+            </button>
+            {/*TITULO */}
+            <div className="flex items-center gap-2">
+              <h1 className="text-[34px] font-semibold">Crear Receta</h1>
+            </div>
+            {/* Spacer derecho del mismo ancho que el botón izquierdo */}
+            <div className="h-11 w-11" aria-hidden />{" "}
+          </div>
         </header>
         {/* FORMULARIO */}
-        <form action="" className="mt-7">
+        <Form method="put" className="mt-7">
           <div className="space-y-5 mb-1">
             <div className="">
               {/* NOMBRE*/}
@@ -131,7 +158,7 @@ export default function RegisterPage() {
           >
             Crear Cuenta
           </button>
-        </form>
+        </Form>
         {/*  ----------------O INICIA SESION CON---------------------------- */}
         <div className="flex items-center gap-4 mb-8">
           <hr className="flex-1" />
@@ -185,12 +212,41 @@ export default function RegisterPage() {
             />
           </picture>
         </div>
-        {/* NO TENES UNA CUENTA? REGISTRATE */}
-        <p className="text-center font-worksans text-[14px] font-[400]">
-          ¿No tenés una cuenta?{" "}
-          <span className="text-primary font-[500]">Regístrate</span>
-        </p>
       </main>
     </>
   );
+}
+
+export async function action({ request }) {
+  const formData = await request.formData();
+
+  // const data = Object.fromEntries(formData.entries());   <---   ESTO ES SOLAMENTE SI QUIERO HACER VALIDACION MANUAL
+
+  // // Validación simple antes de enviar
+  // if (!data.email || !data.password || !data.nombre) {
+  //   throw new Response("Faltan campos obligatorios", { status: 400 });
+  // }
+
+  // const response = await fetch("http://localhost:8080/auth/signup", {
+  //   method: "PUT",
+  //   headers: { "Content-Type": "application/json" },
+  //   body: JSON.stringify({
+  //     name: data.nombre,
+  //     email: data.email,
+  //     password: data.password,
+  //   }),
+  // });
+
+  const response = await fetch("http://localhost:8080/auth/signup", {
+    method: "PUT",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    return errorData;
+  }
+
+  const data1 = await response.json();
+  return redirect("/");
 }

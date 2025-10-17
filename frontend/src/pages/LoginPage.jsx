@@ -1,6 +1,5 @@
 import { useState } from "react";
-
-import LinkButton from "../components/LinkButton";
+import { Link } from "react-router-dom";
 
 import EyeOnIcon from "../assets/icons/icon-mage_eye.svg";
 import EyeOffIcon from "../assets/icons/icon-mage_eye-off.svg";
@@ -160,7 +159,9 @@ export default function LoginPage() {
         {/* NO TENES UNA CUENTA? REGISTRATE */}
         <p className="text-center font-worksans text-[14px] font-[400]">
           ¿No tenés una cuenta?{" "}
-          <span className="text-primary font-[500]">Regístrate</span>
+          <Link to="register">
+            <span className="text-primary font-[500]">Regístrate</span>
+          </Link>
         </p>
       </section>
     </>

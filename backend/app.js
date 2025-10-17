@@ -5,7 +5,7 @@ require("dotenv").config();
 const path = require("path");
 const cors = require("cors");
 
-const feedRoutes = require("./routes/feed");
+const recipeRoutes = require("./routes/recipe");
 const authRoutes = require("./routes/auth");
 
 //CORS
@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/images", express.static(path.join(__dirname, "images")));
 
 //ROUTES
-app.use("/feed", feedRoutes);
+app.use("/recipe", recipeRoutes);
 app.use("/auth", authRoutes);
 
 //MIDDLEWARE ERROR
