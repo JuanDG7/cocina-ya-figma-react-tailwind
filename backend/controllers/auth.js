@@ -1,6 +1,7 @@
 const { validationResult } = require("express-validator");
 const bcryptjs = require("bcryptjs");
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
 
 exports.signUp = (req, res, next) => {
   const errors = validationResult(req);
@@ -43,7 +44,7 @@ exports.signUp = (req, res, next) => {
 exports.login = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-
+  let loadedUser;
   User.findOne({ email: email })
     .then((user) => {
       if (!user) {
@@ -60,6 +61,18 @@ exports.login = (req, res, next) => {
         error.statusCode = 401;
         throw error;
       }
+      const token = jwt.sign(
+        {
+          email: loadedUser.email,
+          userId: loadedUser._id.toString(),
+        },
+        "superclaveSecretaQuak",
+        { expiresIn: "1h" }
+      );
+      res.status(200).json({
+        token: token,
+        userId: loadedUser._id.toString(),
+      });
     })
     .catch((err) => {
       if (!err.statusCode) {

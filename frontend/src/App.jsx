@@ -1,6 +1,6 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
-import LoginPage from "./pages/LoginPage";
+import LoginPage, { action as loginAction } from "./pages/LoginPage";
 import RegisterPage, { action as authAction } from "./pages/RegisterPage";
 import HomePage from "./pages/HomePage";
 import RecipeNew from "./pages/RecipeNew.jsx";
@@ -26,6 +26,7 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <LoginPage />,
+        action: loginAction,
       },
       {
         path: "register",

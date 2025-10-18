@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Form, Link, redirect } from "react-router-dom";
 
 import EyeOnIcon from "../assets/icons/icon-mage_eye.svg";
 import EyeOffIcon from "../assets/icons/icon-mage_eye-off.svg";
@@ -33,7 +33,7 @@ export default function LoginPage() {
           </p>
         </div>
         {/* FORMULARIO */}
-        <form action="">
+        <Form method="post" action=".">
           <div className="space-y-11 mb-1">
             <div className="">
               {/* EMAIL*/}
@@ -100,7 +100,7 @@ export default function LoginPage() {
           >
             Iniciar sesión
           </button>
-        </form>
+        </Form>
         {/*  ----------------O INICIA SESION CON---------------------------- */}
         <div className="flex items-center  gap-4 mb-8">
           <hr className="flex-1" />
@@ -166,4 +166,38 @@ export default function LoginPage() {
       </section>
     </>
   );
+}
+
+export async function action({ request, params }) {
+  // 1️⃣ Obtener los datos del formulario
+  const formData = await request.formData();
+  const email = formData.get("email");
+  const password = formData.get("password");
+  const data = {
+    email,
+    password,
+  };
+
+  // 2️⃣ Enviar la solicitud al backend
+  const response = await fetch("http://localhost:8080/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  // 3️⃣ Manejar errores
+  if (!response.ok) {
+    const errorData = await response.json();
+  }
+
+  // 4️⃣ Obtener datos del backend (token, userId, etc.)
+  const resData = await response.json();
+  console.log(`El token es 🚩:${resData.token}`);
+  console.log(`El userId es 🚩:${resData.userId}`);
+
+  // 💾 Guardar token en localStorage (opcional)
+  localStorage.setItem("token", resData.token);
+  localStorage.setItem("userId", resData.userId);
+  // 5️⃣ Redirigir al usuario
+  return redirect("/homepage");
 }
