@@ -30,4 +30,7 @@ router.put(
   authController.signUp
 );
 
+//Login /auth/login
+router.get("/login", authController.login);
+
 module.exports = router;
