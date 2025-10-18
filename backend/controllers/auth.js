@@ -12,7 +12,7 @@ exports.signUp = (req, res, next) => {
     error.data = errors.array();
     return next(error); // ✅ no rompe el flujo, pasa al manejador global
   }
-  const email = req.body.email;
+  const email = req.body.email.toLowerCase().trim();
   const password = req.body.password;
   const confirmPassword = req.body.confirmPassword;
   const status = req.body.status;
@@ -42,7 +42,7 @@ exports.signUp = (req, res, next) => {
 };
 
 exports.login = (req, res, next) => {
-  const email = req.body.email;
+  const email = req.body.email.toLowerCase().trim();
   const password = req.body.password;
   let loadedUser;
   User.findOne({ email: email })
