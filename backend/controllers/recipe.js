@@ -7,16 +7,15 @@ const User = require("../models/user");
 
 //ALL Recipes (con paginación)
 exports.getRecipes = async (req, res, next) => {
+  const currentPage = parseInt(req.query.page) || 1;
+  const perPage = 2; // 🔧 cantidad de recetas por página
+
   try {
-    const currentPage = parseInt(req.query.page) || 1;
-    const perPage = 2; // 🔧 cantidad de recetas por página
-
-    const totalItems = await Recipe.find().countDocuments();
-
+    const totalItems = await Recipe.countDocuments();
     const recipes = await Recipe.find()
+      .populate("creator")
       .skip((currentPage - 1) * perPage)
       .limit(perPage);
-
     res.status(200).json({
       message: "Fetched recipes successfully.",
       recipes,
@@ -28,8 +27,8 @@ exports.getRecipes = async (req, res, next) => {
   }
 };
 
-//CRAETE Recipe
-exports.createRecipe = (req, res, next) => {
+//CREATE Recipe
+exports.createRecipe = async (req, res, next) => {
   console.log("📩 Req Body:", req.body);
   console.log("📷 Req Files:", req.files);
 
@@ -118,51 +117,42 @@ exports.createRecipe = (req, res, next) => {
     creator: req.userId, //esto es un string pero mongoose al llevarlo a su bd lo convierto a un ObjectId
   });
 
-  let creator;
-  recipe
-    .save()
-    .then((result) => {
-      return User.findById(req.userId);
-    })
-    .then((user) => {
-      creator = user;
-      user.recipes.push(recipe);
-      return user.save();
-    })
-    .then((result) => {
-      res.status(201).json({
-        message: "Recipe created successfully",
-        recipe: recipe,
-        creator: { _id: creator._id, email: creator.email },
-      });
-    })
-
-    .catch((err) => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      next(err);
+  try {
+    await recipe.save();
+    const user = await User.findById(req.userId);
+    user.recipes.push(recipe);
+    await user.save();
+    res.status(201).json({
+      message: "Recipe created successfully",
+      recipe: recipe,
+      creator: { _id: user._id, email: user.email },
     });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
 };
 
 // GET 1 SINGLE Recipe
-exports.getRecipe = (req, res, next) => {
+exports.getRecipe = async (req, res, next) => {
   const requestId = req.params.recipeId;
-  Recipe.findById(requestId)
-    .then((recipe) => {
-      if (!recipe) {
-        const error = new Error("Receta no encontrada! en exports.getRecipe");
-        error.statusCode = 404;
-        throw error;
-      }
-      res.status(200).json({ message: "receta encontrada", recipe: recipe });
-    })
-    .catch((err) => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-        next(err);
-      }
-    });
+
+  try {
+    const recipe = await Recipe.findById(requestId);
+    if (!recipe) {
+      const error = new Error("Receta no encontrada! en exports.getRecipe");
+      error.statusCode = 404;
+      throw error;
+    }
+    res.status(200).json({ message: "receta encontrada", recipe: recipe });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
 };
 
 //PUT EDITAR 1 Recipe
@@ -288,43 +278,36 @@ exports.updateRecipe = async (req, res, next) => {
 };
 
 //DELETE Recipe
-exports.deleteRecipe = (req, res, next) => {
+exports.deleteRecipe = async (req, res, next) => {
   const recipeId = req.params.recipeId;
-  Recipe.findById(recipeId)
-    .then((recipe) => {
-      if (!recipe) {
-        const error = new Error(
-          "Could not find recipe. from exports.deleteRecipe"
-        );
-        error.statusCode = 404;
-        throw error;
-      }
-      if (recipe.creator.toString() !== req.userId) {
-        const error = new Error("Not authorized");
-        error.statusCode = 403;
-        throw error;
-      }
+  try {
+    const recipe = await Recipe.findById(recipeId);
+    if (!recipe) {
+      const error = new Error(
+        "Could not find recipe. from exports.deleteRecipe"
+      );
+      error.statusCode = 404;
+      throw error;
+    }
 
-      //Check logged in user
-      clearImage(recipe.imageUrl);
-      return Recipe.findByIdAndDelete(recipeId);
-    })
-    .then((result) => {
-      return User.findById(req.userId);
-    })
-    .then((user) => {
-      user.recipes.pull(recipeId);
-      return user.save();
-    })
-    .then((result) => {
-      res.status(200).json({ message: "Deleted recipe." });
-    })
-    .catch((err) => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      next(err);
-    });
+    if (recipe.creator.toString() !== req.userId) {
+      const error = new Error("Not authorized");
+      error.statusCode = 403;
+      throw error;
+    }
+    //Check logged in user
+    clearImage(recipe.imageUrl);
+    await Recipe.findByIdAndDelete(recipeId);
+    const user = await User.findById(req.userId);
+    user.recipes.pull(recipeId);
+    await user.save();
+    res.status(200).json({ message: "Deleted recipe." });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
 };
 
 const clearImage = (filePath) => {

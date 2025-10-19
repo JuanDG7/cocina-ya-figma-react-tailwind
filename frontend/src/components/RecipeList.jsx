@@ -43,7 +43,9 @@ export default function RecipeList({ recipes }) {
                 <span>{recipe.porciones}</span>
               </span>
             </div>{" "}
+            <div>Created bv {recipe.creator.email}</div>
           </div>
+
           {/* BOTONES */}
           <div className="mt-1 grid w-full grid-cols-2 gap-3">
             <LinkButton to={recipe._id} variant="primary" className="w-full">
