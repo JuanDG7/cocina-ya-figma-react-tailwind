@@ -42,7 +42,10 @@ export default function ViewRecipePage() {
 export async function loader({ request, params }) {
   const id = params.recipeId;
 
-  const response = await fetch("http://localhost:8080/feed/post/" + id);
+  const token = localStorage.getItem("token");
+  const response = await fetch("http://localhost:8080/recipe/post/" + id, {
+    headers: { Authorization: "Bearer " + token },
+  });
 
   if (!response.ok) {
     throw new Response(
@@ -58,9 +61,15 @@ export async function loader({ request, params }) {
 export async function action({ request, params }) {
   const recipeId = params.recipeId;
 
-  const response = await fetch("http://localhost:8080/feed/post/" + recipeId, {
-    method: "DELETE",
-  });
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(
+    "http://localhost:8080/recipe/post/" + recipeId,
+    {
+      method: "DELETE",
+      headers: { Authorization: "Bearer " + token },
+    }
+  );
 
   if (!response.ok) {
     throw new Response(

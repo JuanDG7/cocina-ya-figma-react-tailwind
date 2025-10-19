@@ -4,7 +4,7 @@ const { body } = require("express-validator");
 
 const recipeController = require("../controllers/recipe");
 const upload = require("../middleware/upload");
-
+const isAuth = require("../middleware/is-auth");
 const createRecipeValidators = [
   body("titulo")
     .trim()
@@ -47,11 +47,12 @@ const createRecipeValidators = [
 ];
 
 //GET /recipe/posts  //listar
-router.get("/posts", recipeController.getPosts);
+router.get("/posts", isAuth, recipeController.getPosts);
 
 //POST /recipe/post   //crear
 router.post(
   "/post",
+  isAuth,
   upload.fields([
     { name: "mainPhoto", maxCount: 1 },
     { name: "stepPhotos[]", maxCount: 20 },
@@ -61,12 +62,13 @@ router.post(
 );
 
 //GET /recipe/post/:recipeId   //listar 1
-router.get("/post/:recipeId", recipeController.getPost);
+router.get("/post/:recipeId", isAuth, recipeController.getPost);
 
 // PUT /recipe/post/:recipeId/edit
 
 router.put(
   "/post/:recipeId",
+  isAuth,
   upload.fields([
     { name: "mainPhoto", maxCount: 1 },
     { name: "stepPhotos[]", maxCount: 20 },
@@ -75,5 +77,5 @@ router.put(
 );
 
 // DELETE /recipe/post/:recipeId
-router.delete("/post/:recipeId", recipeController.deletePost);
+router.delete("/post/:recipeId", isAuth, recipeController.deletePost);
 module.exports = router;

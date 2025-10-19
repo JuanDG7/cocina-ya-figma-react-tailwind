@@ -2,7 +2,7 @@ const { validationResult } = require("express-validator");
 const bcryptjs = require("bcryptjs");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
-
+require("dotenv").config();
 exports.signUp = (req, res, next) => {
   const errors = validationResult(req);
 
@@ -66,7 +66,7 @@ exports.login = (req, res, next) => {
           email: loadedUser.email,
           userId: loadedUser._id.toString(),
         },
-        "superclaveSecretaQuak",
+        process.env.JWT_SECRET,
         { expiresIn: "1h" }
       );
       res.status(200).json({

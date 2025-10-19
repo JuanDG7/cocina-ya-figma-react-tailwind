@@ -14,7 +14,7 @@ import MyRecipesPage from "./pages/MyRecipesPage";
 import AuthLayout from "./pages/AuthLayout.jsx";
 import RootLayout from "./pages/RootLayout.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
-import RecipesPage, { loader as recipeLoader } from "./pages/Recipes.jsx";
+import RecipesPage, { loader as recipeLoader } from "./pages/RecipesPage.jsx";
 import { action as manipulateRecipeAction } from "./components/RecipeForm.jsx";
 
 const router = createBrowserRouter([

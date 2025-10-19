@@ -195,17 +195,17 @@ export async function action({ request, params }) {
     if (k === "stepText") console.log("📝", v);
     if (k === "stepPhotos[]") console.log("📸", v.name);
   }
-
-  let url = "http://localhost:8080/feed/post";
+  const token = localStorage.getItem("token");
+  let url = "http://localhost:8080/recipe/post";
 
   console.log("🧾 METHOD ES:", request.method);
   if (request.method === "PUT") {
     const eventId = params.recipeId;
-    url = "http://localhost:8080/feed/post/" + eventId;
+    url = "http://localhost:8080/recipe/post/" + eventId;
   }
   const response = await fetch(url, {
     method: request.method,
-
+    headers: { Authorization: "Bearer " + token },
     body: data,
   });
 

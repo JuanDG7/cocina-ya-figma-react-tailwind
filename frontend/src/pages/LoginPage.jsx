@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form, Link, redirect } from "react-router-dom";
+import { Form, Link, redirect, useActionData } from "react-router-dom";
 
 import EyeOnIcon from "../assets/icons/icon-mage_eye.svg";
 import EyeOffIcon from "../assets/icons/icon-mage_eye-off.svg";
@@ -9,6 +9,7 @@ import logoPng from "../assets/logo-cocinaya.png";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const actionData = useActionData();
 
   return (
     <>
@@ -100,6 +101,12 @@ export default function LoginPage() {
           >
             Iniciar sesión
           </button>
+          {/*                                           POSIBLE MENSAJE DE ERROR DE AUTHENTICATION */}{" "}
+          {actionData?.error && (
+            <p className="text-red-500 text-center text-sm mt-3">
+              {actionData.error}
+            </p>
+          )}
         </Form>
         {/*  ----------------O INICIA SESION CON---------------------------- */}
         <div className="flex items-center  gap-4 mb-8">
@@ -181,13 +188,17 @@ export async function action({ request, params }) {
   // 2️⃣ Enviar la solicitud al backend
   const response = await fetch("http://localhost:8080/auth/login", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(data),
   });
 
   // 3️⃣ Manejar errores
   if (!response.ok) {
     const errorData = await response.json();
+    // ✅ devolvés un objeto que React Router le pasa al componente
+    return { error: errorData.message || "No fue posible autenticarse." };
   }
 
   // 4️⃣ Obtener datos del backend (token, userId, etc.)

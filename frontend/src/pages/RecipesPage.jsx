@@ -62,8 +62,18 @@ export default function Recipes() {
 export async function loader({ request }) {
   const url = new URL(request.url);
   const page = url.searchParams.get("page") || 1;
+  const token = localStorage.getItem("token");
 
-  const response = await fetch(`http://localhost:8080/feed/posts?page=${page}`);
+  const response = await fetch(
+    `http://localhost:8080/recipe/posts?page=${page}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    }
+  );
   if (!response.ok) {
     throw new Response(JSON.stringify({ message: "Error en Recipes.jsx" }), {
       status: 500,

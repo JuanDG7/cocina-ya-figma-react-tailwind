@@ -33,7 +33,7 @@ export default function MyRecipesPage() {
             <div className="h-11 w-11" aria-hidden />{" "}
           </div>
         </header>
-        <Link to="#" className="flex flex-col  items-center gap-2  w-full">
+        <div to="#" className="flex flex-col  items-center gap-2  w-full">
           {/*CARDD*/}
           <div
             className="p-5 w-[95%] rounded-2xl border border-black/5 bg-white flex flex-col items-center   shadow-[0_0_6px_rgba(0,0,0,0.14)]
@@ -79,7 +79,7 @@ export default function MyRecipesPage() {
               </LinkButton>
             </div>
           </div>
-        </Link>
+        </div>
       </div>
     </>
   );
