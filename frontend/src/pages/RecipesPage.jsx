@@ -65,7 +65,7 @@ export async function loader({ request }) {
   const token = localStorage.getItem("token");
 
   const response = await fetch(
-    `http://localhost:8080/recipe/posts?page=${page}`,
+    `http://localhost:8080/recipe/recipes?page=${page}`,
     {
       method: "GET",
       headers: {

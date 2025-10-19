@@ -2,11 +2,11 @@ const { validationResult } = require("express-validator");
 const Recipe = require("../models/recipe");
 const fs = require("fs");
 const path = require("path");
-const Post = require("../models/recipe");
 
-//ALL POSTS
-//ALL POSTS (con paginación)
-exports.getPosts = async (req, res, next) => {
+const User = require("../models/user");
+
+//ALL Recipes (con paginación)
+exports.getRecipes = async (req, res, next) => {
   try {
     const currentPage = parseInt(req.query.page) || 1;
     const perPage = 2; // 🔧 cantidad de recetas por página
@@ -28,8 +28,8 @@ exports.getPosts = async (req, res, next) => {
   }
 };
 
-//CRAETE POST
-exports.createPost = (req, res, next) => {
+//CRAETE Recipe
+exports.createRecipe = (req, res, next) => {
   console.log("📩 Req Body:", req.body);
   console.log("📷 Req Files:", req.files);
 
@@ -115,16 +115,28 @@ exports.createPost = (req, res, next) => {
     imageUrl: imageUrl,
     ingredients,
     steps,
+    creator: req.userId, //esto es un string pero mongoose al llevarlo a su bd lo convierto a un ObjectId
   });
 
+  let creator;
   recipe
     .save()
     .then((result) => {
+      return User.findById(req.userId);
+    })
+    .then((user) => {
+      creator = user;
+      user.recipes.push(recipe);
+      return user.save();
+    })
+    .then((result) => {
       res.status(201).json({
-        message: "Post created successfully",
-        recipe: result,
+        message: "Recipe created successfully",
+        recipe: recipe,
+        creator: { _id: creator._id, email: creator.email },
       });
     })
+
     .catch((err) => {
       if (!err.statusCode) {
         err.statusCode = 500;
@@ -133,13 +145,13 @@ exports.createPost = (req, res, next) => {
     });
 };
 
-// GET 1 SINGLE POST
-exports.getPost = (req, res, next) => {
+// GET 1 SINGLE Recipe
+exports.getRecipe = (req, res, next) => {
   const requestId = req.params.recipeId;
   Recipe.findById(requestId)
     .then((recipe) => {
       if (!recipe) {
-        const error = new Error("Receta no encontrada! en exports.getPost");
+        const error = new Error("Receta no encontrada! en exports.getRecipe");
         error.statusCode = 404;
         throw error;
       }
@@ -153,50 +165,23 @@ exports.getPost = (req, res, next) => {
     });
 };
 
-//PUT 1 POST
-exports.updatePost = async (req, res, next) => {
+//PUT EDITAR 1 Recipe
+exports.updateRecipe = async (req, res, next) => {
   console.log("📩 BODY:", req.body);
   console.log("📷 FILES:", req.files);
 
+  const recipeId = req.params.recipeId;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error("Validación falló, datos incorrectos");
     error.statusCode = 422;
-    error.data = errors.array();
+    error.errorDetails = errors.array();
     return next(error);
   }
-
-  const recipeId = req.params.recipeId;
-  const recipe = await Recipe.findById(recipeId);
-  if (!recipe) {
-    const err = new Error("Receta no encontrada");
-    err.statusCode = 404;
-    return next(err);
-  }
-
-  // 🧱 Campos principales
-  const {
-    titulo,
-    calorias,
-    tiempoMin,
-    porciones,
-    descripcion,
-    categoria,
-    consejos,
-  } = req.body;
 
   // 📸 Foto principal nueva o existente
   let mainPhoto = req.files?.mainPhoto?.[0]?.path || req.body.imageUrl;
   if (mainPhoto) mainPhoto = mainPhoto.replace(/\\/g, "/");
-
-  // 🧹 Si reemplazó la foto principal
-  if (
-    req.files?.mainPhoto &&
-    recipe.imageUrl &&
-    recipe.imageUrl !== mainPhoto
-  ) {
-    clearImage(recipe.imageUrl);
-  }
 
   // 🥣 INGREDIENTES
   const ingredientsName = Array.isArray(req.body.ingredientsName)
@@ -218,7 +203,7 @@ exports.updatePost = async (req, res, next) => {
     }))
     .filter((x) => x.name || x.amount);
 
-  // 🧩 STEPS (coherente con createPost)
+  // 🧩 STEPS (coherente con createRecipe)
   const stepTexts = Array.isArray(req.body.stepText)
     ? req.body.stepText
     : req.body.stepText
@@ -250,6 +235,37 @@ exports.updatePost = async (req, res, next) => {
     };
   });
 
+  // 🧱 Campos principales
+  const {
+    titulo,
+    calorias,
+    tiempoMin,
+    porciones,
+    descripcion,
+    categoria,
+    consejos,
+  } = req.body;
+
+  const recipe = await Recipe.findById(recipeId);
+  if (!recipe) {
+    const error = new Error("Receta no encontrada");
+    error.statusCode = 404;
+    throw error;
+  }
+  if (recipe.creator.toString() !== req.userId) {
+    const error = new Error("Not authorized!");
+    error.statusCode = 403;
+    throw error;
+  }
+
+  // 🧹 Si reemplazó la foto principal
+  if (
+    req.files?.mainPhoto &&
+    recipe.imageUrl &&
+    recipe.imageUrl !== mainPhoto
+  ) {
+    clearImage(recipe.imageUrl);
+  }
   // 🧠 Actualizar campos
   recipe.titulo = titulo;
   recipe.calorias = calorias;
@@ -271,28 +287,37 @@ exports.updatePost = async (req, res, next) => {
   });
 };
 
-//DELETE POST
-exports.deletePost = (req, res, next) => {
+//DELETE Recipe
+exports.deleteRecipe = (req, res, next) => {
   const recipeId = req.params.recipeId;
-  Post.findById(recipeId)
-    .then((post) => {
-      if (!post) {
-        const error = new Error("Could not find post. from exports.deletePost");
+  Recipe.findById(recipeId)
+    .then((recipe) => {
+      if (!recipe) {
+        const error = new Error(
+          "Could not find recipe. from exports.deleteRecipe"
+        );
         error.statusCode = 404;
         throw error;
       }
+      if (recipe.creator.toString() !== req.userId) {
+        const error = new Error("Not authorized");
+        error.statusCode = 403;
+        throw error;
+      }
+
       //Check logged in user
-      clearImage(post.imageUrl);
-      return Post.findByIdAndDelete(recipeId);
+      clearImage(recipe.imageUrl);
+      return Recipe.findByIdAndDelete(recipeId);
     })
     .then((result) => {
       console.log(result);
-      res.status(200).json({ message: "Deleted post." });
+      res.status(200).json({ message: "Deleted recipe." });
     })
     .catch((err) => {
       if (!err.statusCode) {
         err.statusCode = 500;
       }
+      next(err);
     });
 };
 

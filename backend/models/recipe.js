@@ -36,6 +36,11 @@ const RecipeSchema = new Schema(
         photos: [{ type: String, required: false }],
       },
     ],
+    creator: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   { timestamps: true }
 );

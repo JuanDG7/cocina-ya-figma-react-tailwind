@@ -63,9 +63,9 @@ exports.login = (req, res, next) => {
       }
       const token = jwt.sign(
         {
-          email: loadedUser.email,
-          userId: loadedUser._id.toString(),
-        },
+          email: loadedUser.email, //
+          userId: loadedUser._id.toString(), //aca lo convierte a String aunque no hacia falta el .toString()
+        }, // es un overKILL
         process.env.JWT_SECRET,
         { expiresIn: "1h" }
       );

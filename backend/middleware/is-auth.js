@@ -24,6 +24,6 @@ module.exports = (req, res, next) => {
     error.statusCode = 401;
     throw error;
   }
-  req.userId = decodedToken.userId;
+  req.userId = decodedToken.userId; //esto es string... el decodedToken.userId pq en el jwt.sign solo guarda string
   next();
 };

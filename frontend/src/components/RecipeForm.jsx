@@ -196,12 +196,12 @@ export async function action({ request, params }) {
     if (k === "stepPhotos[]") console.log("📸", v.name);
   }
   const token = localStorage.getItem("token");
-  let url = "http://localhost:8080/recipe/post";
+  let url = "http://localhost:8080/recipe";
 
   console.log("🧾 METHOD ES:", request.method);
   if (request.method === "PUT") {
     const eventId = params.recipeId;
-    url = "http://localhost:8080/recipe/post/" + eventId;
+    url = "http://localhost:8080/recipe/" + eventId;
   }
   const response = await fetch(url, {
     method: request.method,
@@ -221,5 +221,5 @@ export async function action({ request, params }) {
       status: response.status,
     });
   }
-  // return redirect("/homepage");
+  return redirect("/homepage");
 }

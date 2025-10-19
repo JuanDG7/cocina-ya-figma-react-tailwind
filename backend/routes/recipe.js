@@ -46,36 +46,36 @@ const createRecipeValidators = [
     .withMessage("Debe incluir al menos un paso"),
 ];
 
-//GET /recipe/posts  //listar
-router.get("/posts", isAuth, recipeController.getPosts);
+//GET /recipe/recipes  //listar
+router.get("/recipes", isAuth, recipeController.getRecipes);
 
-//POST /recipe/post   //crear
+//POST /recipe/recipe   //crear
 router.post(
-  "/post",
+  "",
   isAuth,
   upload.fields([
     { name: "mainPhoto", maxCount: 1 },
     { name: "stepPhotos[]", maxCount: 20 },
   ]),
   // createRecipeValidators,
-  recipeController.createPost
+  recipeController.createRecipe
 );
 
-//GET /recipe/post/:recipeId   //listar 1
-router.get("/post/:recipeId", isAuth, recipeController.getPost);
+//GET /recipe/recipe/:recipeId   //listar 1
+router.get("/:recipeId", isAuth, recipeController.getRecipe);
 
-// PUT /recipe/post/:recipeId/edit
+// PUT /recipe/recipe/:recipeId/edit
 
 router.put(
-  "/post/:recipeId",
+  "/:recipeId",
   isAuth,
   upload.fields([
     { name: "mainPhoto", maxCount: 1 },
     { name: "stepPhotos[]", maxCount: 20 },
   ]),
-  recipeController.updatePost
+  recipeController.updateRecipe
 );
 
-// DELETE /recipe/post/:recipeId
-router.delete("/post/:recipeId", isAuth, recipeController.deletePost);
+// DELETE /recipe/recipe/:recipeId
+router.delete("/:recipeId", isAuth, recipeController.deleteRecipe);
 module.exports = router;

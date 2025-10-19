@@ -43,7 +43,7 @@ export async function loader({ request, params }) {
   const id = params.recipeId;
 
   const token = localStorage.getItem("token");
-  const response = await fetch("http://localhost:8080/recipe/post/" + id, {
+  const response = await fetch("http://localhost:8080/recipe/" + id, {
     headers: { Authorization: "Bearer " + token },
   });
 
@@ -63,13 +63,10 @@ export async function action({ request, params }) {
 
   const token = localStorage.getItem("token");
 
-  const response = await fetch(
-    "http://localhost:8080/recipe/post/" + recipeId,
-    {
-      method: "DELETE",
-      headers: { Authorization: "Bearer " + token },
-    }
-  );
+  const response = await fetch("http://localhost:8080/recipe/" + recipeId, {
+    method: "DELETE",
+    headers: { Authorization: "Bearer " + token },
+  });
 
   if (!response.ok) {
     throw new Response(
