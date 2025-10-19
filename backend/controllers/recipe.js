@@ -310,7 +310,13 @@ exports.deleteRecipe = (req, res, next) => {
       return Recipe.findByIdAndDelete(recipeId);
     })
     .then((result) => {
-      console.log(result);
+      return User.findById(req.userId);
+    })
+    .then((user) => {
+      user.recipes.pull(recipeId);
+      return user.save();
+    })
+    .then((result) => {
       res.status(200).json({ message: "Deleted recipe." });
     })
     .catch((err) => {
