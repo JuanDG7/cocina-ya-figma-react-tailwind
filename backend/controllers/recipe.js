@@ -2,8 +2,23 @@ const { validationResult } = require("express-validator");
 const Recipe = require("../models/recipe");
 const fs = require("fs");
 const path = require("path");
-
 const User = require("../models/user");
+
+const clearImage = (filePath) => {
+  if (!filePath) return;
+  try {
+    const fullPath = path.join(__dirname, "..", filePath.replace(/\\/g, "/"));
+    fs.unlink(fullPath, (err) => {
+      if (err) {
+        console.error("🗑️ Error al borrar imagen:", err.message);
+      } else {
+        console.log("🗑️ Imagen borrada correctamente:", fullPath);
+      }
+    });
+  } catch (err) {
+    console.error("🗑️ Error al limpiar imagen:", err.message);
+  }
+};
 
 //ALL Recipes (con paginación)
 exports.getRecipes = async (req, res, next) => {
@@ -156,6 +171,7 @@ exports.getRecipe = async (req, res, next) => {
 };
 
 // backend/controllers/recipe.js
+// backend/controllers/recipe.js
 exports.updateRecipe = async (req, res, next) => {
   console.log("📩 BODY:", req.body);
   console.log("📷 FILES:", req.files);
@@ -230,8 +246,9 @@ exports.updateRecipe = async (req, res, next) => {
 
   for (let i = 0; i < stepIds.length; i++) {
     const text = stepTexts[i] ? String(stepTexts[i]).trim() : "";
-    const id = stepIds[i];
-    const oldPath = existingStepPhotos[i];
+    const oldPath = existingStepPhotos[i]
+      ? String(existingStepPhotos[i]).replace(/\\/g, "/")
+      : "";
     const newFlag = hasNewPhotos[i] === "true";
 
     let finalPhoto = oldPath;
@@ -252,7 +269,16 @@ exports.updateRecipe = async (req, res, next) => {
     });
   }
 
-  // 🧱 CAMPOS PRINCIPALES
+  // 🧹 BORRAR FOTO PRINCIPAL SI SE REEMPLAZÓ
+  if (
+    req.files?.mainPhoto &&
+    recipe.imageUrl &&
+    recipe.imageUrl !== mainPhoto
+  ) {
+    clearImage(String(recipe.imageUrl).replace(/\\/g, "/"));
+  }
+
+  // 🧠 ACTUALIZAR CAMPOS
   const {
     titulo,
     calorias,
@@ -262,17 +288,6 @@ exports.updateRecipe = async (req, res, next) => {
     categoria,
     consejos,
   } = req.body;
-
-  // 🧹 BORRAR FOTO PRINCIPAL SI SE REEMPLAZÓ
-  if (
-    req.files?.mainPhoto &&
-    recipe.imageUrl &&
-    recipe.imageUrl !== mainPhoto
-  ) {
-    clearImage(recipe.imageUrl);
-  }
-
-  // 🧠 ACTUALIZAR RECETA
   recipe.titulo = titulo;
   recipe.calorias = calorias;
   recipe.tiempoMin = tiempoMin;
@@ -282,7 +297,30 @@ exports.updateRecipe = async (req, res, next) => {
   recipe.consejos = consejos;
   recipe.imageUrl = mainPhoto;
   recipe.ingredients = ingredients;
+
+  // 🔒 Guardamos referencia de las fotos anteriores para limpiar las que ya no queden
+  const previousPhotos = new Set();
+  (recipe.steps || []).forEach((s) =>
+    (s.photos || []).forEach((p) =>
+      previousPhotos.add(String(p).replace(/\\/g, "/"))
+    )
+  );
+
   recipe.steps = updatedSteps;
+
+  // ✅ LIMPIEZA: borrar cualquier foto que estaba antes y ya NO está en los pasos nuevos
+  const keptPhotos = new Set();
+  updatedSteps.forEach((s) =>
+    (s.photos || []).forEach((p) =>
+      keptPhotos.add(String(p).replace(/\\/g, "/"))
+    )
+  );
+
+  previousPhotos.forEach((p) => {
+    if (!keptPhotos.has(p)) {
+      clearImage(p);
+    }
+  });
 
   await recipe.save();
 
@@ -294,6 +332,7 @@ exports.updateRecipe = async (req, res, next) => {
 };
 
 //DELETE Recipe
+// backend/controllers/recipe.js
 exports.deleteRecipe = async (req, res, next) => {
   const recipeId = req.params.recipeId;
   try {
@@ -311,22 +350,28 @@ exports.deleteRecipe = async (req, res, next) => {
       error.statusCode = 403;
       throw error;
     }
-    //Check logged in user
-    clearImage(recipe.imageUrl);
+
+    // 🧹 Borrar main photo
+    if (recipe.imageUrl) {
+      clearImage(String(recipe.imageUrl).replace(/\\/g, "/"));
+    }
+
+    // 🧹 Borrar todas las fotos de pasos
+    (recipe.steps || []).forEach((step) => {
+      (step.photos || []).forEach((p) => {
+        if (p) clearImage(String(p).replace(/\\/g, "/"));
+      });
+    });
+
     await Recipe.findByIdAndDelete(recipeId);
+
     const user = await User.findById(req.userId);
     user.recipes.pull(recipeId);
     await user.save();
+
     res.status(200).json({ message: "Deleted recipe." });
   } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
+    if (!err.statusCode) err.statusCode = 500;
     next(err);
   }
-};
-
-const clearImage = (filePath) => {
-  const fullPath = path.join(__dirname, "..", filePath);
-  fs.unlink(fullPath, (err) => console.log("🗑️ Error al borrar imagen:", err));
 };
