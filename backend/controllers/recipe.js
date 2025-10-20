@@ -155,7 +155,7 @@ exports.getRecipe = async (req, res, next) => {
   }
 };
 
-//PUT EDITAR 1 Recipe
+// backend/controllers/recipe.js
 exports.updateRecipe = async (req, res, next) => {
   console.log("📩 BODY:", req.body);
   console.log("📷 FILES:", req.files);
@@ -169,7 +169,7 @@ exports.updateRecipe = async (req, res, next) => {
     return next(error);
   }
 
-  // 📸 Foto principal nueva o existente
+  // 📸 FOTO PRINCIPAL NUEVA O EXISTENTE
   let mainPhoto = req.files?.mainPhoto?.[0]?.path || req.body.imageUrl;
   if (mainPhoto) mainPhoto = mainPhoto.replace(/\\/g, "/");
 
@@ -193,49 +193,7 @@ exports.updateRecipe = async (req, res, next) => {
     }))
     .filter((x) => x.name || x.amount);
 
-  // 🧩 STEPS (coherente con createRecipe)
-  const stepTexts = Array.isArray(req.body.stepText)
-    ? req.body.stepText
-    : req.body.stepText
-    ? [req.body.stepText]
-    : [];
-
-  const existingStepPhotos = Array.isArray(req.body.existingStepPhotos)
-    ? req.body.existingStepPhotos
-    : req.body.existingStepPhotos
-    ? [req.body.existingStepPhotos]
-    : [];
-
-  const stepPhotos = req.files?.["stepPhotos[]"] || [];
-
-  const steps = stepTexts.map((text, i) => {
-    const oldPath = existingStepPhotos[i];
-    const newFile = stepPhotos[i];
-    const photoPath = newFile
-      ? newFile.path.replace(/\\/g, "/")
-      : oldPath || null;
-
-    if (newFile && oldPath && oldPath !== photoPath) {
-      clearImage(oldPath);
-    }
-
-    return {
-      text: String(text || "").trim(),
-      photos: photoPath ? [photoPath] : [],
-    };
-  });
-
-  // 🧱 Campos principales
-  const {
-    titulo,
-    calorias,
-    tiempoMin,
-    porciones,
-    descripcion,
-    categoria,
-    consejos,
-  } = req.body;
-
+  // 🧱 BUSCAR RECETA
   const recipe = await Recipe.findById(recipeId);
   if (!recipe) {
     const error = new Error("Receta no encontrada");
@@ -248,7 +206,64 @@ exports.updateRecipe = async (req, res, next) => {
     throw error;
   }
 
-  // 🧹 Si reemplazó la foto principal
+  // 🧩 === LÓGICA DE PASOS ACTUALIZADA ===
+  const stepTexts = Array.isArray(req.body.stepText)
+    ? req.body.stepText
+    : [req.body.stepText || ""];
+
+  const stepIds = Array.isArray(req.body.photoId)
+    ? req.body.photoId
+    : [req.body.photoId || ""];
+
+  const existingStepPhotos = Array.isArray(req.body.existingStepPhotos)
+    ? req.body.existingStepPhotos
+    : [req.body.existingStepPhotos || ""];
+
+  const hasNewPhotos = Array.isArray(req.body.hasNewPhoto)
+    ? req.body.hasNewPhoto
+    : [req.body.hasNewPhoto || "false"];
+
+  const stepFiles = req.files?.["stepPhotos[]"] || [];
+
+  let fileIndex = 0;
+  const updatedSteps = [];
+
+  for (let i = 0; i < stepIds.length; i++) {
+    const text = stepTexts[i] ? String(stepTexts[i]).trim() : "";
+    const id = stepIds[i];
+    const oldPath = existingStepPhotos[i];
+    const newFlag = hasNewPhotos[i] === "true";
+
+    let finalPhoto = oldPath;
+
+    // 📸 Solo reemplazar si el usuario subió nueva imagen
+    if (newFlag && stepFiles[fileIndex]) {
+      finalPhoto = stepFiles[fileIndex].path.replace(/\\/g, "/");
+      fileIndex++;
+      if (oldPath && oldPath !== finalPhoto) clearImage(oldPath);
+    }
+
+    // ⛔ Omitir pasos vacíos (borrados)
+    if (!text && !finalPhoto) continue;
+
+    updatedSteps.push({
+      text,
+      photos: finalPhoto ? [finalPhoto] : [],
+    });
+  }
+
+  // 🧱 CAMPOS PRINCIPALES
+  const {
+    titulo,
+    calorias,
+    tiempoMin,
+    porciones,
+    descripcion,
+    categoria,
+    consejos,
+  } = req.body;
+
+  // 🧹 BORRAR FOTO PRINCIPAL SI SE REEMPLAZÓ
   if (
     req.files?.mainPhoto &&
     recipe.imageUrl &&
@@ -256,7 +271,8 @@ exports.updateRecipe = async (req, res, next) => {
   ) {
     clearImage(recipe.imageUrl);
   }
-  // 🧠 Actualizar campos
+
+  // 🧠 ACTUALIZAR RECETA
   recipe.titulo = titulo;
   recipe.calorias = calorias;
   recipe.tiempoMin = tiempoMin;
@@ -266,7 +282,7 @@ exports.updateRecipe = async (req, res, next) => {
   recipe.consejos = consejos;
   recipe.imageUrl = mainPhoto;
   recipe.ingredients = ingredients;
-  recipe.steps = steps;
+  recipe.steps = updatedSteps;
 
   await recipe.save();
 

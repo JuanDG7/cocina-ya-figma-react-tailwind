@@ -6,7 +6,7 @@ export default function StepsList({ initialSteps = [] }) {
   const [steps, setSteps] = useState(
     initialSteps.length > 0
       ? initialSteps.map((s) => ({
-          id: s.id || uuidv4(),
+          id: s.id || uuidv4(), // id estable del paso
           text: s.text || "",
           photo: s.photos?.[0]
             ? {
@@ -48,6 +48,7 @@ export default function StepsList({ initialSteps = [] }) {
         URL.revokeObjectURL(removed.photo.preview);
         allURLs.current.delete(removed.photo.preview);
       }
+      // Si borra todo, deja uno vacío
       return copy.length ? copy : [{ id: uuidv4(), text: "", photo: null }];
     });
   }
@@ -56,7 +57,6 @@ export default function StepsList({ initialSteps = [] }) {
     if (!file) return;
     const preview = URL.createObjectURL(file);
     allURLs.current.add(preview);
-
     setSteps((prev) => {
       const copy = [...prev];
       copy[stepIndex] = { ...copy[stepIndex], photo: { file, preview } };
@@ -76,18 +76,6 @@ export default function StepsList({ initialSteps = [] }) {
       return copy;
     });
   }
-
-  useEffect(() => {
-    console.log(
-      "🧠 Estado actual de pasos:",
-      steps.map((s, i) => ({
-        i,
-        id: s.id,
-        text: s.text,
-        preview: s.photo?.preview,
-      }))
-    );
-  }, [steps]);
 
   return (
     <div className="flex flex-col items-center gap-4 w-[95%]">
@@ -113,7 +101,7 @@ export default function StepsList({ initialSteps = [] }) {
         onClick={addStep}
         className="flex-1 bg-secondary p-[12px] mt-5 ml-auto text-white rounded-full font-worksans font-[500] text-[16px]"
       >
-        + Agregar pasos
+        + Agregar paso
       </button>
     </div>
   );

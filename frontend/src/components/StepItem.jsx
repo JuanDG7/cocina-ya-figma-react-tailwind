@@ -7,13 +7,12 @@ export default function StepItem({
   stepId,
   value = "",
   photo = null,
-  onChange, // (index, text)
-  onRemove, // (index)
-  onPickPhoto, // (index, File)
-  onRemovePhoto, // (index)
+  onChange,
+  onRemove,
+  onPickPhoto,
+  onRemovePhoto,
 }) {
   const inputId = `photo-${index}`;
-  console.log("🔍 StepItem value:", { index, value });
 
   return (
     <div className="flex flex-col space-y-2 mx-auto">
@@ -26,7 +25,7 @@ export default function StepItem({
               type="text"
               value={value || ""}
               onChange={(e) => onChange(index, e.target.value)}
-              placeholder="Ej: Pon la mezcla en un molde"
+              placeholder="Ej: Batir los huevos"
               className="flex-1 placeholder-gray-400 focus:outline-none focus:ring-0"
               name="stepText[]"
             />
@@ -52,10 +51,10 @@ export default function StepItem({
           <span className="invisible">1</span>
 
           <div className="flex gap-4 items-center flex-wrap">
-            {/* ID del paso */}
+            {/* ID único del paso */}
             <input type="hidden" name="photoId[]" value={stepId} />
 
-            {/* URL actual de la foto */}
+            {/* Imagen vieja (por si no se reemplaza) */}
             <input
               type="hidden"
               name="existingStepPhotos[]"
@@ -66,7 +65,7 @@ export default function StepItem({
               }
             />
 
-            {/* Archivo nuevo (solo si el usuario elige uno) */}
+            {/* Archivo nuevo */}
             <input
               id={inputId}
               type="file"
@@ -74,7 +73,12 @@ export default function StepItem({
               className="hidden"
               onClick={(e) => (e.target.value = "")}
               onChange={(e) => onPickPhoto(index, e.target.files[0])}
-              name="stepPhotos[]" // 👈 este nombre es el que Multer espera
+              name="stepPhotos[]" // coincide con multer
+            />
+            <input
+              type="hidden"
+              name="hasNewPhoto[]"
+              value={photo?.file ? "true" : "false"}
             />
 
             {photo ? (
@@ -104,12 +108,8 @@ export default function StepItem({
             )}
           </div>
 
-          {/* Placeholder para reordenar */}
-          <button
-            type="button"
-            className="text-rose-700 ml-auto"
-            title="Reordenar"
-          >
+          {/* Icono decorativo */}
+          <button type="button" className="text-rose-700 ml-auto" title="Mover">
             <img className="size-10" src={MovileNavIcon} alt="" />
           </button>
         </div>
