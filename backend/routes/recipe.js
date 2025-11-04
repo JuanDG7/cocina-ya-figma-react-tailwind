@@ -49,6 +49,9 @@ const createRecipeValidators = [
 //GET /recipe/recipes  //listar
 router.get("/recipes", isAuth, recipeController.getRecipes);
 
+// GET /recipe/my-recipes
+router.get("/my-recipes", isAuth, recipeController.getMyRecipes);
+
 //POST /recipe/recipe   //crear
 router.post(
   "",

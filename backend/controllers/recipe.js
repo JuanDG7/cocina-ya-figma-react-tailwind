@@ -41,6 +41,40 @@ exports.getRecipes = async (req, res, next) => {
     next(err);
   }
 };
+//My Recipes
+
+exports.getMyRecipes = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    if (!userId) {
+      const error = new Error("No se encontró el usuario autenticado.");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    // 🔸 Paginación
+    const currentPage = parseInt(req.query.page) || 1;
+    const perPage = 2;
+
+    // 🔸 Contar total de recetas del usuario
+    const totalItems = await Recipe.countDocuments({ creator: userId });
+
+    // 🔸 Traer recetas del usuario con paginación
+    const recipes = await Recipe.find({ creator: userId })
+      .populate("creator", "email") // opcional
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
+
+    res.status(200).json({
+      message: "Recetas del usuario obtenidas correctamente.",
+      recipes,
+      totalItems,
+    });
+  } catch (err) {
+    if (!err.statusCode) err.statusCode = 500;
+    next(err);
+  }
+};
 
 //CREATE Recipe
 exports.createRecipe = async (req, res, next) => {
@@ -101,8 +135,12 @@ exports.createRecipe = async (req, res, next) => {
 
   // ingredientes
   if (ingredientsName.length !== ingredientsAmount.length) {
-    return res.status(422).json({ erroresBack: "ingredientes desalineados" });
+    const error = new Error("Ingredientes desalineados");
+    error.statusCode = 422;
+    error.data = [{ msg: "Los nombres y cantidades no coinciden" }];
+    return next(error);
   }
+
   const ingredients = ingredientsName
     .map((name, index) => ({
       name: String(name).trim(),
@@ -170,8 +208,7 @@ exports.getRecipe = async (req, res, next) => {
   }
 };
 
-// backend/controllers/recipe.js
-// backend/controllers/recipe.js
+//Update Recipe
 exports.updateRecipe = async (req, res, next) => {
   console.log("📩 BODY:", req.body);
   console.log("📷 FILES:", req.files);
@@ -332,7 +369,6 @@ exports.updateRecipe = async (req, res, next) => {
 };
 
 //DELETE Recipe
-// backend/controllers/recipe.js
 exports.deleteRecipe = async (req, res, next) => {
   const recipeId = req.params.recipeId;
   try {
