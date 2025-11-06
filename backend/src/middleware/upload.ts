@@ -1,6 +1,7 @@
-const multer = require("multer");
-const path = require("path");
-const { v4: uuidv4 } = require("uuid");
+import multer, { FileFilterCallback } from "multer";
+import path from "path";
+import { v4 as uuidv4 } from "uuid";
+import type { Request } from "express";
 
 // 📦 Almacenamiento
 const storage = multer.diskStorage({
@@ -15,7 +16,11 @@ const storage = multer.diskStorage({
 });
 
 // 🧩 Filtro de tipos permitidos
-const fileFilter = (req, file, cb) => {
+const fileFilter = (
+  req: Request,
+  file: Express.Multer.File,
+  cb: FileFilterCallback
+) => {
   const ok = /image\/(png|jpe?g|webp)/.test(file.mimetype);
   cb(null, ok);
 };
@@ -27,4 +32,4 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 }, // límite de 5MB
 });
 
-module.exports = upload;
+export default upload;

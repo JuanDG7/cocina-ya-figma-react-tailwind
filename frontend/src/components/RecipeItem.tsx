@@ -92,17 +92,16 @@ export default function RecipeItem({ recipe }: RecipeItemProps) {
           </li>
         ))}
       </ol>
-      <div className="w-full mb-28 text-center ">
-        <button
-          type="button"
-          className="flex-1 bg-primary py-[12px] text-white rounded-full font-worksans font-[500] text-[16px]"
-          onClick={() => {
-            setModalOpen(true);
-          }}
+      <div className="flex  gap-4 w-full mb-28">
+        <LinkButton
+          to="#"
+          onClick={() => setModalOpen(true)}
+          variant="primary"
+          className="flex-1"
         >
-          Borrar Receta
-        </button>{" "}
-        <LinkButton to={"edit"} variant="tertiary" className="w-full">
+          Borrar receta
+        </LinkButton>
+        <LinkButton to={"edit"} variant="tertiary" className="flex-1">
           Editar receta
         </LinkButton>
       </div>

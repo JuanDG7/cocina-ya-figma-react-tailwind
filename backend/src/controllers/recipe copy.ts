@@ -1,10 +1,13 @@
-const { validationResult } = require("express-validator");
-const Recipe = require("../models/recipe");
-const fs = require("fs");
-const path = require("path");
-const User = require("../models/user");
+import { validationResult } from "express-validator";
+import Recipe from "../models/recipe";
+import fs from "fs";
+import path from "path";
+import User from "../models/user";
+import type { Request, Response, NextFunction } from "express";
 
-const clearImage = (filePath) => {
+import { Types } from "mongoose";
+
+const clearImage = (filePath: string | undefined) => {
   if (!filePath) return;
   try {
     const fullPath = path.join(__dirname, "..", filePath.replace(/\\/g, "/"));
@@ -16,13 +19,18 @@ const clearImage = (filePath) => {
       }
     });
   } catch (err) {
-    console.error("🗑️ Error al limpiar imagen:", err.message);
+    const error = err as Error;
+    console.error("🗑️ Error al limpiar imagen:", error.message);
   }
 };
 
 //ALL Recipes (con paginación)
-exports.getRecipes = async (req, res, next) => {
-  const currentPage = parseInt(req.query.page) || 1;
+export const getRecipes = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const currentPage = parseInt(req.query.page as string) || 1;
   const perPage = 2; // 🔧 cantidad de recetas por página
 
   try {
@@ -37,23 +45,30 @@ exports.getRecipes = async (req, res, next) => {
       totalItems,
     });
   } catch (err) {
-    if (!err.statusCode) err.statusCode = 500;
+    const error = err as Error & { statusCode?: number };
+    if (!error.statusCode) error.statusCode = 500;
     next(err);
   }
 };
 //My Recipes
 
-exports.getMyRecipes = async (req, res, next) => {
+export const getMyRecipes = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const userId = req.userId;
     if (!userId) {
-      const error = new Error("No se encontró el usuario autenticado.");
+      const error = new Error(
+        "No se encontró el usuario autenticado."
+      ) as Error & { statusCode?: number };
       error.statusCode = 401;
       throw error;
     }
 
     // 🔸 Paginación
-    const currentPage = parseInt(req.query.page) || 1;
+    const currentPage = parseInt(req.query.page as string) || 1;
     const perPage = 2;
 
     // 🔸 Contar total de recetas del usuario
@@ -71,26 +86,41 @@ exports.getMyRecipes = async (req, res, next) => {
       totalItems,
     });
   } catch (err) {
-    if (!err.statusCode) err.statusCode = 500;
+    const error = err as Error & { statusCode?: number };
+    if (!error.statusCode) error.statusCode = 500;
     next(err);
   }
 };
 
 //CREATE Recipe
-exports.createRecipe = async (req, res, next) => {
+export const createRecipe = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   console.log("📩 Req Body:", req.body);
   console.log("📷 Req Files:", req.files);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    const error = new Error("Validacion fallo, data incorrecta");
+    const error = new Error("Validacion fallo, data incorrecta") as Error & {
+      statusCode?: number;
+      data?: unknown;
+    };
     error.statusCode = 422;
     error.data = errors.array();
     return next(error); // ✅ no rompe el flujo, pasa al manejador global
   }
 
+  type MulterFiles = {
+    mainPhoto?: Express.Multer.File[];
+    "stepPhotos[]"?: Express.Multer.File[];
+  };
+
+  const files = req.files as MulterFiles;
+
   // ✅ 1) Foto principal (mainPhoto)
-  const mainPhoto = req.files?.mainPhoto?.[0]?.path || null;
+  const mainPhoto = files?.mainPhoto?.[0]?.path || null;
 
   // si no llegó, responde 422 (tu schema exige imageUrl)
   // if (!mainPhoto) {
@@ -101,7 +131,9 @@ exports.createRecipe = async (req, res, next) => {
 
   // 🚨 Si no llegó la imagen principal
   if (!mainPhoto) {
-    const error = new Error("Falta la foto principal (mainPhoto)");
+    const error = new Error("Falta la foto principal (mainPhoto)") as Error & {
+      statusCode?: number;
+    };
     error.statusCode = 422;
     return next(error); // ✅ Envía al middleware global de errores
   }
@@ -135,22 +167,25 @@ exports.createRecipe = async (req, res, next) => {
 
   // ingredientes
   if (ingredientsName.length !== ingredientsAmount.length) {
-    const error = new Error("Ingredientes desalineados");
+    const error = new Error("Ingredientes desalineados") as Error & {
+      statusCode?: number;
+      data?: unknown;
+    };
     error.statusCode = 422;
     error.data = [{ msg: "Los nombres y cantidades no coinciden" }];
     return next(error);
   }
 
   const ingredients = ingredientsName
-    .map((name, index) => ({
+    .map((name: string, index: number) => ({
       name: String(name).trim(),
       amount: String(ingredientsAmount[index] || "").trim(),
     }))
-    .filter((x) => x.name || x.amount);
+    .filter((x: { name: string; amount: string }) => x.name || x.amount);
 
   // 🪄 6) Armar pasos por índice (1 foto por paso)
-  const stepPhotos = req.files?.["stepPhotos[]"] || [];
-  const steps = stepText.map((text, i) => ({
+  const stepPhotos = files?.["stepPhotos[]"] || [];
+  const steps = stepText.map((text: string, i: number) => ({
     text: String(text || "").trim(),
     photos: stepPhotos[i] ? [stepPhotos[i].path] : [],
   }));
@@ -173,7 +208,14 @@ exports.createRecipe = async (req, res, next) => {
   try {
     await recipe.save();
     const user = await User.findById(req.userId);
-    user.recipes.push(recipe);
+    if (!user) {
+      const error = new Error("User not found") as Error & {
+        statusCode?: number;
+      };
+      error.statusCode = 404;
+      throw error;
+    }
+    user.recipes.push(recipe._id as Types.ObjectId);
     await user.save();
     res.status(201).json({
       message: "Recipe created successfully",
@@ -181,49 +223,71 @@ exports.createRecipe = async (req, res, next) => {
       creator: { _id: user._id, email: user.email },
     });
   } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
+    const error = err as Error & { statusCode?: number };
+    if (!error.statusCode) {
+      error.statusCode = 500;
     }
     next(err);
   }
 };
 
 // GET 1 SINGLE Recipe
-exports.getRecipe = async (req, res, next) => {
+export const getRecipe = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const requestId = req.params.recipeId;
 
   try {
     const recipe = await Recipe.findById(requestId);
     if (!recipe) {
-      const error = new Error("Receta no encontrada! en exports.getRecipe");
+      const error = new Error(
+        "Receta no encontrada! en exports.getRecipe"
+      ) as Error & { statusCode?: number };
       error.statusCode = 404;
       throw error;
     }
     res.status(200).json({ message: "receta encontrada", recipe: recipe });
   } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
+    const error = err as Error & { statusCode?: number };
+    if (!error.statusCode) {
+      error.statusCode = 500;
     }
     next(err);
   }
 };
 
 //Update Recipe
-exports.updateRecipe = async (req, res, next) => {
+export const updateRecipe = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   console.log("📩 BODY:", req.body);
   console.log("📷 FILES:", req.files);
 
   const recipeId = req.params.recipeId;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    const error = new Error("Validación falló, datos incorrectos");
+    const error = new Error("Validación falló, datos incorrectos") as Error & {
+      statusCode?: number;
+      errorDetails?: unknown;
+    };
     error.statusCode = 422;
     error.errorDetails = errors.array();
     return next(error);
   }
 
+  type MulterFiles = {
+    mainPhoto?: Express.Multer.File[];
+    "stepPhotos[]"?: Express.Multer.File[];
+  };
+
+  const files = req.files as MulterFiles;
+
   // 📸 FOTO PRINCIPAL NUEVA O EXISTENTE
-  let mainPhoto = req.files?.mainPhoto?.[0]?.path || req.body.imageUrl;
+  let mainPhoto = files?.mainPhoto?.[0]?.path || req.body.imageUrl;
   if (mainPhoto) mainPhoto = mainPhoto.replace(/\\/g, "/");
 
   // 🥣 INGREDIENTES
@@ -240,21 +304,25 @@ exports.updateRecipe = async (req, res, next) => {
     : [];
 
   const ingredients = ingredientsName
-    .map((name, index) => ({
+    .map((name: string, index: number) => ({
       name: String(name).trim(),
       amount: String(ingredientsAmount[index] || "").trim(),
     }))
-    .filter((x) => x.name || x.amount);
+    .filter((x: { name: string; amount: string }) => x.name || x.amount);
 
   // 🧱 BUSCAR RECETA
   const recipe = await Recipe.findById(recipeId);
   if (!recipe) {
-    const error = new Error("Receta no encontrada");
+    const error = new Error("Receta no encontrada") as Error & {
+      statusCode?: number;
+    };
     error.statusCode = 404;
     throw error;
   }
   if (recipe.creator.toString() !== req.userId) {
-    const error = new Error("Not authorized!");
+    const error = new Error("Not authorized!") as Error & {
+      statusCode?: number;
+    };
     error.statusCode = 403;
     throw error;
   }
@@ -276,7 +344,7 @@ exports.updateRecipe = async (req, res, next) => {
     ? req.body.hasNewPhoto
     : [req.body.hasNewPhoto || "false"];
 
-  const stepFiles = req.files?.["stepPhotos[]"] || [];
+  const stepFiles = files?.["stepPhotos[]"] || [];
 
   let fileIndex = 0;
   const updatedSteps = [];
@@ -307,11 +375,7 @@ exports.updateRecipe = async (req, res, next) => {
   }
 
   // 🧹 BORRAR FOTO PRINCIPAL SI SE REEMPLAZÓ
-  if (
-    req.files?.mainPhoto &&
-    recipe.imageUrl &&
-    recipe.imageUrl !== mainPhoto
-  ) {
+  if (files?.mainPhoto && recipe.imageUrl && recipe.imageUrl !== mainPhoto) {
     clearImage(String(recipe.imageUrl).replace(/\\/g, "/"));
   }
 
@@ -336,7 +400,7 @@ exports.updateRecipe = async (req, res, next) => {
   recipe.ingredients = ingredients;
 
   // 🔒 Guardamos referencia de las fotos anteriores para limpiar las que ya no queden
-  const previousPhotos = new Set();
+  const previousPhotos = new Set<string>();
   (recipe.steps || []).forEach((s) =>
     (s.photos || []).forEach((p) =>
       previousPhotos.add(String(p).replace(/\\/g, "/"))
@@ -346,7 +410,7 @@ exports.updateRecipe = async (req, res, next) => {
   recipe.steps = updatedSteps;
 
   // ✅ LIMPIEZA: borrar cualquier foto que estaba antes y ya NO está en los pasos nuevos
-  const keptPhotos = new Set();
+  const keptPhotos = new Set<string>();
   updatedSteps.forEach((s) =>
     (s.photos || []).forEach((p) =>
       keptPhotos.add(String(p).replace(/\\/g, "/"))
@@ -369,20 +433,26 @@ exports.updateRecipe = async (req, res, next) => {
 };
 
 //DELETE Recipe
-exports.deleteRecipe = async (req, res, next) => {
+export const deleteRecipe = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const recipeId = req.params.recipeId;
   try {
     const recipe = await Recipe.findById(recipeId);
     if (!recipe) {
       const error = new Error(
         "Could not find recipe. from exports.deleteRecipe"
-      );
+      ) as Error & { statusCode?: number };
       error.statusCode = 404;
       throw error;
     }
 
     if (recipe.creator.toString() !== req.userId) {
-      const error = new Error("Not authorized");
+      const error = new Error("Not authorized") as Error & {
+        statusCode?: number;
+      };
       error.statusCode = 403;
       throw error;
     }
@@ -393,8 +463,8 @@ exports.deleteRecipe = async (req, res, next) => {
     }
 
     // 🧹 Borrar todas las fotos de pasos
-    (recipe.steps || []).forEach((step) => {
-      (step.photos || []).forEach((p) => {
+    (recipe.steps || []).forEach((step: { photos?: string[] }) => {
+      (step.photos || []).forEach((p: string) => {
         if (p) clearImage(String(p).replace(/\\/g, "/"));
       });
     });
@@ -402,12 +472,20 @@ exports.deleteRecipe = async (req, res, next) => {
     await Recipe.findByIdAndDelete(recipeId);
 
     const user = await User.findById(req.userId);
-    user.recipes.pull(recipeId);
+    if (!user) {
+      const error = new Error(
+        "Usuario no encontrado al eliminar receta"
+      ) as Error & { statusCode?: number };
+      error.statusCode = 404;
+      throw error;
+    }
+    (user.recipes as any).pull(recipeId);
     await user.save();
 
     res.status(200).json({ message: "Deleted recipe." });
   } catch (err) {
-    if (!err.statusCode) err.statusCode = 500;
+    const error = err as Error & { statusCode?: number };
+    if (!error.statusCode) error.statusCode = 500;
     next(err);
   }
 };

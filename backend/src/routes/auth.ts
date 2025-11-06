@@ -1,12 +1,10 @@
-const express = require("express");
-const { body } = require("express-validator");
-const upload = require("../middleware/upload");
-
-const User = require("../models/user.js");
-const authController = require("../controllers/auth.js");
-
-const router = express.Router();
-
+import { Router } from "express";
+const router = Router();
+import { body } from "express-validator";
+import upload from "../middleware/upload";
+import User from "../models/user";
+import * as authController from "../controllers/auth";
+import type { IUser } from "../models/user";
 //Sign In
 router.put(
   "/signup",
@@ -17,7 +15,7 @@ router.put(
       .withMessage("Please enter a valid email.")
       .normalizeEmail()
       .custom((value, { req }) => {
-        return User.findOne({ email: value }).then((userDoc) => {
+        return User.findOne({ email: value }).then((userDoc: IUser) => {
           console.log("🧪 Probando búsqueda sin filtro:", userDoc);
           if (userDoc) {
             return Promise.reject("Este email ya existe en la base de datos");
@@ -33,4 +31,4 @@ router.put(
 //Login /auth/login
 router.post("/login", authController.login);
 
-module.exports = router;
+export default router;

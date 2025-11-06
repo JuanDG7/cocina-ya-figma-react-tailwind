@@ -1,13 +1,13 @@
-const express = require("express");
-const app = express();
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import path from "path";
+import cors from "cors";
+import recipeRoutes from "./routes/recipe";
+import authRoutes from "./routes/auth";
+import type { Request, Response, NextFunction } from "express";
 dotenv.config();
-const path = require("path");
-const cors = require("cors");
-
-const recipeRoutes = require("./routes/recipe");
-const authRoutes = require("./routes/auth");
+const app = express();
 
 //CORS
 const corsOptions = {
@@ -23,14 +23,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //PUBLIC
-app.use("/images", express.static(path.join(__dirname, "images")));
+app.use("/images", express.static(path.join(__dirname, "..", "images")));
 
 //ROUTES
 app.use("/recipe", recipeRoutes);
 app.use("/auth", authRoutes);
 
 //MIDDLEWARE ERROR
-app.use((error, req, res, next) => {
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
   const status = error.statusCode || 500;
   const message = error.message;
   const data = error.data;
@@ -46,7 +46,7 @@ app.use((error, req, res, next) => {
   res.status(status).json({ message: message, data: data });
 });
 
-mongoose.connect(process.env.MONGODB_URI).then((result) => {
+mongoose.connect(process.env.MONGODB_URI as string).then((result) => {
   app.listen(8080);
   console.log("Connected to database!");
 });

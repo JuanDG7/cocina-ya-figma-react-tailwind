@@ -1,10 +1,10 @@
-const express = require("express");
-const router = express.Router();
-const { body } = require("express-validator");
+import { Router } from "express";
+import { body } from "express-validator";
 
-const recipeController = require("../controllers/recipe");
-const upload = require("../middleware/upload");
-const isAuth = require("../middleware/is-auth");
+import * as recipeController from "../controllers/recipe";
+import upload from "../middleware/upload";
+import isAuth from "../middleware/is-auth";
+
 const createRecipeValidators = [
   body("titulo")
     .trim()
@@ -46,6 +46,8 @@ const createRecipeValidators = [
     .withMessage("Debe incluir al menos un paso"),
 ];
 
+const router = Router();
+
 //GET /recipe/recipes  //listar
 router.get("/recipes", isAuth, recipeController.getRecipes);
 
@@ -81,4 +83,5 @@ router.put(
 
 // DELETE /recipe/recipe/:recipeId
 router.delete("/:recipeId", isAuth, recipeController.deleteRecipe);
-module.exports = router;
+
+export default router;

@@ -1,7 +1,31 @@
-const mongoose = require("mongoose");
-const { Schema, model } = mongoose;
+import mongoose from "mongoose";
 
-const RecipeSchema = new Schema(
+export interface IIngredient {
+  name: string;
+  amount: string;
+}
+
+export interface IStep {
+  text: string;
+  photos: string[];
+}
+
+export interface IRecipe extends mongoose.Document {
+  titulo: string;
+  calorias: number;
+  tiempoMin: number;
+  porciones: number;
+  descripcion?: string;
+  categoria?: string;
+  consejos?: string;
+  imageUrl: string;
+  ingredients: IIngredient[];
+  steps: IStep[];
+  creator: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+const RecipeSchema = new mongoose.Schema<IRecipe>(
   {
     // Título obligatorio
     titulo: { type: String, trim: true, required: true },
@@ -37,7 +61,7 @@ const RecipeSchema = new Schema(
       },
     ],
     creator: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
@@ -46,4 +70,4 @@ const RecipeSchema = new Schema(
 );
 
 // Evita redefinir el modelo en entornos con hot-reload
-module.exports = model("Recipe", RecipeSchema);
+export default mongoose.model<IRecipe>("Recipe", RecipeSchema);
