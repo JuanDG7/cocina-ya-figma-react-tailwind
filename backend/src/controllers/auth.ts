@@ -23,6 +23,7 @@ export const signUp = async (
       error.data = errors.array();
       return next(error); // ✅ no rompe el flujo, pasa al manejador global
     }
+    //esto de toLowerCase y trim se hace en la validacion ya sea en zod o express validtor no aqui....
     const email = req.body.email.toLowerCase().trim();
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
@@ -46,7 +47,7 @@ export const signUp = async (
     if (!error.statusCode) {
       error.statusCode = 500;
     }
-    next(err);
+    next(error);
   }
 };
 

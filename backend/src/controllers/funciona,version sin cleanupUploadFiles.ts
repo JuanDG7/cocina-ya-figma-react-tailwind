@@ -9,9 +9,19 @@ import { Types } from "mongoose";
 
 const clearImage = (filePath: string | undefined) => {
   if (!filePath) return;
-  //el try aca esta al pedo
   try {
-    const fullPath = path.join(__dirname, "..", filePath.replace(/\\/g, "/"));
+    const fullPath = path.join(
+      __dirname,
+      "..",
+      "..",
+      filePath.replace(/\\/g, "/")
+    );
+
+    // 👇 AGREGA ESTO TEMPORALMENTE
+    console.log("📂 __dirname:", __dirname);
+    console.log("🧭 filePath:", filePath);
+    console.log("📁 fullPath:", fullPath);
+
     fs.unlink(fullPath, (err) => {
       if (err) {
         console.error("🗑️ Error al borrar imagen:", err.message);
@@ -23,6 +33,13 @@ const clearImage = (filePath: string | undefined) => {
     const error = err as Error;
     console.error("🗑️ Error al limpiar imagen:", error.message);
   }
+};
+
+// ✅ BORRAR ARCHIVOS SUBIDOS SI FALLA LA VALIDACIÓN (422)
+const cleanupUploadedFiles = (files: unknown) => {
+  (Object.values((files as any) || {}) as any[]).flat().forEach((f) => {
+    if (f?.path) clearImage(f.path);
+  });
 };
 
 //ALL Recipes (con paginación)
@@ -104,6 +121,7 @@ export const createRecipe = async (
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    cleanupUploadedFiles(req.files);
     const error = new Error("Validacion fallo, data incorrecta") as Error & {
       statusCode?: number;
       data?: unknown;
@@ -121,7 +139,10 @@ export const createRecipe = async (
   const files = req.files as MulterFiles;
 
   // ✅ 1) Foto principal (mainPhoto)
-  const mainPhoto = files?.mainPhoto?.[0]?.path || null;
+  const mainPhoto = files?.mainPhoto?.[0];
+  const imageUrl = mainPhoto
+    ? `images/${mainPhoto.filename}` // genera ruta limpia y corta
+    : req.body.imageUrl || null; // conserva la anterior si no hay nueva
 
   // si no llegó, responde 422 (tu schema exige imageUrl)
   // if (!mainPhoto) {
@@ -132,6 +153,7 @@ export const createRecipe = async (
 
   // 🚨 Si no llegó la imagen principal
   if (!mainPhoto) {
+    cleanupUploadedFiles(req.files);
     const error = new Error("Falta la foto principal (mainPhoto)") as Error & {
       statusCode?: number;
     };
@@ -146,7 +168,6 @@ export const createRecipe = async (
   const descripcion = req.body.descripcion;
   const categoria = req.body.categoria;
   const consejos = req.body.consejos;
-  const imageUrl = mainPhoto;
 
   // arrays (normalizados)
   const stepText = Array.isArray(req.body.stepText)
@@ -168,6 +189,7 @@ export const createRecipe = async (
 
   // ingredientes
   if (ingredientsName.length !== ingredientsAmount.length) {
+    cleanupUploadedFiles(req.files);
     const error = new Error("Ingredientes desalineados") as Error & {
       statusCode?: number;
       data?: unknown;

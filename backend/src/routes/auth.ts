@@ -1,11 +1,13 @@
 import { Router } from "express";
-const router = Router();
 import { body } from "express-validator";
 import upload from "../middleware/upload";
 import User from "../models/user";
 import * as authController from "../controllers/auth";
 import type { IUser } from "../models/user";
-//Sign In
+
+const router = Router();
+
+//crear usuario
 router.put(
   "/signup",
   upload.none(),
@@ -14,8 +16,9 @@ router.put(
       .isEmail()
       .withMessage("Please enter a valid email.")
       .normalizeEmail()
+      .notEmpty()
       .custom((value, { req }) => {
-        return User.findOne({ email: value }).then((userDoc: IUser) => {
+        return User.findOne({ email: value }).then((userDoc: IUser | null) => {
           console.log("🧪 Probando búsqueda sin filtro:", userDoc);
           if (userDoc) {
             return Promise.reject("Este email ya existe en la base de datos");

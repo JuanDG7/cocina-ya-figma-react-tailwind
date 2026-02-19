@@ -48,13 +48,13 @@ const createRecipeValidators = [
 
 const router = Router();
 
-//GET /recipe/recipes  //listar
+//GET /recipe/recipes  //listar todas las recetas
 router.get("/recipes", isAuth, recipeController.getRecipes);
 
-// GET /recipe/my-recipes
+// GET /recipe/my-recipes //listar 1 receta
 router.get("/my-recipes", isAuth, recipeController.getMyRecipes);
 
-//POST /recipe/recipe   //crear
+//POST /recipe   //crear
 router.post(
   "",
   isAuth,
@@ -62,7 +62,7 @@ router.post(
     { name: "mainPhoto", maxCount: 1 },
     { name: "stepPhotos[]", maxCount: 20 },
   ]),
-  // createRecipeValidators,
+  createRecipeValidators,
   recipeController.createRecipe
 );
 

@@ -7,21 +7,32 @@ import type { Request, Response, NextFunction } from "express";
 
 import { Types } from "mongoose";
 
-const clearImage = (filePath: string | undefined) => {
+const clearImage = (filePath?: string) => {
   if (!filePath) return;
-  try {
-    const fullPath = path.join(__dirname, "..", filePath.replace(/\\/g, "/"));
-    fs.unlink(fullPath, (err) => {
-      if (err) {
-        console.error("🗑️ Error al borrar imagen:", err.message);
-      } else {
-        console.log("🗑️ Imagen borrada correctamente:", fullPath);
-      }
+  const fullPath = path.join(
+    __dirname,
+    "..",
+    "..",
+    filePath.replace(/\\/g, "/")
+  );
+  fs.unlink(fullPath, (err) => {
+    if (err) {
+      // Si el archivo no existe, no es grave
+      if ((err as NodeJS.ErrnoException).code === "ENOENT") return;
+      console.error("🗑️ Error al borrar imagen:", err.message);
+      return;
+    }
+    console.log("🗑️ Imagen borrada correctamente:", fullPath);
+  });
+};
+
+// ✅ BORRAR ARCHIVOS SUBIDOS SI FALLA LA VALIDACIÓN (422)
+const cleanupUploadedFiles = (files: any) => {
+  Object.values(files || {})
+    .flat()
+    .forEach((f: any) => {
+      if (f && f.path) clearImage(f.path);
     });
-  } catch (err) {
-    const error = err as Error;
-    console.error("🗑️ Error al limpiar imagen:", error.message);
-  }
 };
 
 //ALL Recipes (con paginación)
@@ -47,11 +58,10 @@ export const getRecipes = async (
   } catch (err) {
     const error = err as Error & { statusCode?: number };
     if (!error.statusCode) error.statusCode = 500;
-    next(err);
+    next(error);
   }
 };
 //My Recipes
-
 export const getMyRecipes = async (
   req: Request,
   res: Response,
@@ -103,6 +113,7 @@ export const createRecipe = async (
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    cleanupUploadedFiles(req.files);
     const error = new Error("Validacion fallo, data incorrecta") as Error & {
       statusCode?: number;
       data?: unknown;
@@ -134,6 +145,7 @@ export const createRecipe = async (
 
   // 🚨 Si no llegó la imagen principal
   if (!mainPhoto) {
+    cleanupUploadedFiles(req.files);
     const error = new Error("Falta la foto principal (mainPhoto)") as Error & {
       statusCode?: number;
     };
@@ -169,6 +181,7 @@ export const createRecipe = async (
 
   // ingredientes
   if (ingredientsName.length !== ingredientsAmount.length) {
+    cleanupUploadedFiles(req.files);
     const error = new Error("Ingredientes desalineados") as Error & {
       statusCode?: number;
       data?: unknown;
@@ -461,7 +474,7 @@ export const deleteRecipe = async (
 
     // 🧹 Borrar main photo
     if (recipe.imageUrl) {
-      clearImage(String(recipe.imageUrl).replace(/\\/g, "/"));
+      clearImage(recipe.imageUrl.replace(/\\/g, "/"));
     }
 
     // 🧹 Borrar todas las fotos de pasos
@@ -481,6 +494,10 @@ export const deleteRecipe = async (
       error.statusCode = 404;
       throw error;
     }
+
+    /* BUENA PRACTICA!
+    await User.updateOne({ _id: req.userId }, { $pull: { recipes: recipeId } });
+*/
     (user.recipes as any).pull(recipeId);
     await user.save();
 

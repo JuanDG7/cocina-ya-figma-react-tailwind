@@ -46,7 +46,13 @@ app.use((error: any, req: Request, res: Response, next: NextFunction) => {
   res.status(status).json({ message: message, data: data });
 });
 
-mongoose.connect(process.env.MONGODB_URI as string).then((result) => {
-  app.listen(8080);
-  console.log("Connected to database!");
-});
+mongoose
+  .connect(process.env.MONGODB_URI as string)
+  .then((result) => {
+    app.listen(8080);
+    console.log("Connected to database!");
+  })
+  .catch((error) => {
+    console.log("DB connection failed:", error);
+    process.exit(1);
+  });

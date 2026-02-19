@@ -48,7 +48,7 @@ export default function RecipeList({ recipes }: RecipeListProps) {
                 <span>{recipe.porciones}</span>
               </span>
             </div>{" "}
-            <div>Created bv {recipe.creator.email}</div>
+            <div>Created bv {recipe.creator.email ?? "-"}</div>
           </div>
 
           {/* BOTONES */}

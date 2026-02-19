@@ -25,7 +25,7 @@ export interface IRecipe extends mongoose.Document {
   createdAt?: Date;
   updatedAt?: Date;
 }
-const RecipeSchema = new mongoose.Schema<IRecipe>(
+const recipeSchema = new mongoose.Schema<IRecipe>(
   {
     // Título obligatorio
     titulo: { type: String, trim: true, required: true },
@@ -70,4 +70,4 @@ const RecipeSchema = new mongoose.Schema<IRecipe>(
 );
 
 // Evita redefinir el modelo en entornos con hot-reload
-export default mongoose.model<IRecipe>("Recipe", RecipeSchema);
+export default mongoose.model<IRecipe>("Recipe", recipeSchema);

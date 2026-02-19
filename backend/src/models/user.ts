@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema<IUser>({
     unique: true,
     lowercase: true,
   },
+
   password: { type: String, required: true, trim: true },
   confirmPassword: { type: String, trim: true },
   status: { type: String, trim: true, default: "normal" },
