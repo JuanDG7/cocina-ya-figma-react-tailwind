@@ -132,9 +132,19 @@ export const createRecipe = async (
 
   // ✅ 1) Foto principal (mainPhoto)
   const mainPhoto = files?.mainPhoto?.[0];
-  const imageUrl = mainPhoto
-    ? `images/${mainPhoto.filename}` // genera ruta limpia y corta
-    : req.body.imageUrl || null; // conserva la anterior si no hay nueva
+
+  if (!mainPhoto) {
+    cleanupUploadedFiles(req.files);
+    const error = new Error("Falta la foto principal (mainPhoto)") as Error & {
+      statusCode?: number;
+      data?: { msg: string }[];
+    };
+    error.statusCode = 422;
+    error.data = [{ msg: "Falta la foto principal (mainPhoto)" }];
+    return next(error); // ✅ Envía al middleware global de errores
+  }
+
+  const imageUrl = `images/${mainPhoto.filename}`;
 
   // si no llegó, responde 422 (tu schema exige imageUrl)
   // if (!mainPhoto) {
@@ -144,14 +154,6 @@ export const createRecipe = async (
   // }
 
   // 🚨 Si no llegó la imagen principal
-  if (!mainPhoto) {
-    cleanupUploadedFiles(req.files);
-    const error = new Error("Falta la foto principal (mainPhoto)") as Error & {
-      statusCode?: number;
-    };
-    error.statusCode = 422;
-    return next(error); // ✅ Envía al middleware global de errores
-  }
 
   const titulo = req.body.titulo;
   const calorias = req.body.calorias;
@@ -416,6 +418,7 @@ export const updateRecipe = async (
 
   // 🔒 Guardamos referencia de las fotos anteriores para limpiar las que ya no queden
   const previousPhotos = new Set<string>();
+
   (recipe.steps || []).forEach((s) =>
     (s.photos || []).forEach((p) =>
       previousPhotos.add(String(p).replace(/\\/g, "/"))
@@ -426,6 +429,7 @@ export const updateRecipe = async (
 
   // ✅ LIMPIEZA: borrar cualquier foto que estaba antes y ya NO está en los pasos nuevos
   const keptPhotos = new Set<string>();
+
   updatedSteps.forEach((s) =>
     (s.photos || []).forEach((p) =>
       keptPhotos.add(String(p).replace(/\\/g, "/"))
