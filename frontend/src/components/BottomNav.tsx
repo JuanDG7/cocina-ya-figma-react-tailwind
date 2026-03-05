@@ -7,59 +7,61 @@ import DocumentEditIcon from "./icons/DocumentEditIcon";
 import PlusIcon from "../assets/icons/icon-plus.svg";
 export default function BottomNav() {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50  max-w-screen-md mx-auto ">
-      {/* FAB */}
-
-      {/* barra (grid con hueco central) */}
-      <ul className="grid grid-cols-5 h-16 bg-[url(/img/background.svg)] bg-cover bg-center   rounded-t-2xl items-center">
-        <li className="flex justify-center">
-          <NavLink to="/homepage">
-            {({ isActive }) => {
-              return (
-                <HomeIcon active={isActive} className="w-6 h-6 text-primary" />
-              );
-            }}
-          </NavLink>
-        </li>
-        <li className="flex justify-center">
-          <NavLink to="/recipes">
-            {({ isActive }) => (
-              <PublicSearch
-                active={isActive}
-                className="w-6 h-6 text-primary"
-              />
-            )}
-          </NavLink>
-        </li>
-        <li className="flex justify-center">
-          {" "}
-          <Link
-            to="/recipes/new"
-            className="-mt-12 size-24 flex items-center justify-center"
-            aria-label="Agregar"
-          >
-            <img className="" src={PlusIcon} alt="Agregar receta" />
-          </Link>
-        </li>
-        {/* hueco */}
-        <li className="flex justify-center ">
-          <NavLink to="/favorite-recipe">
-            {({ isActive }) => (
-              <HeartIcon active={isActive} className="w-6 h-6 text-primary" />
-            )}
-          </NavLink>
-        </li>
-        <li className="flex justify-center">
-          <NavLink to="/my-recipes">
-            {({ isActive }) => (
-              <DocumentEditIcon
-                active={isActive}
-                className="h-6 w-6 text-primary"
-              />
-            )}
-          </NavLink>
-        </li>
-      </ul>
+    <nav className="fixed inset-x-0 bottom-0 z-50  max-w-screen-md mx-auto  ">
+      <div className="bg-[url(/img/background.svg)] bg-cover bg-center   rounded-t-2xl">
+        <ul className="grid grid-cols-5 h-16  items-center">
+          <li className="flex justify-center">
+            <NavLink to="/homepage">
+              {({ isActive }) => {
+                return (
+                  <HomeIcon
+                    active={isActive}
+                    className="w-6 h-6 text-primary"
+                  />
+                );
+              }}
+            </NavLink>
+          </li>
+          <li className="flex justify-center">
+            <NavLink to="/recipes">
+              {({ isActive }) => (
+                <PublicSearch
+                  active={isActive}
+                  className="w-6 h-6 text-primary"
+                />
+              )}
+            </NavLink>
+          </li>
+          <li className="flex justify-center">
+            {" "}
+            <Link
+              to="/recipes/new"
+              className="-mt-12 size-24 flex items-center justify-center"
+              aria-label="Agregar"
+            >
+              <img className="" src={PlusIcon} alt="Agregar receta" />
+            </Link>
+          </li>
+          {/* hueco */}
+          <li className="flex justify-center ">
+            <NavLink to="/favorite-recipe">
+              {({ isActive }) => (
+                <HeartIcon active={isActive} className="w-6 h-6 text-primary" />
+              )}
+            </NavLink>
+          </li>
+          <li className="flex justify-center">
+            <NavLink to="/my-recipes">
+              {({ isActive }) => (
+                <DocumentEditIcon
+                  active={isActive}
+                  className="h-6 w-6 text-primary"
+                />
+              )}
+            </NavLink>
+          </li>
+        </ul>
+      </div>
     </nav>
   );
 }

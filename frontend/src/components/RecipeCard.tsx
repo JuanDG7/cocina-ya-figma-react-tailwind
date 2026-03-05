@@ -19,7 +19,7 @@ export default function RecipeCard({ meal }: RecipeCardProps) {
     <>
       <Link
         to={`/recipes/${meal.id}`}
-        className="flex flex-col items-center gap-2  w-full"
+        className="flex flex-col items-center gap-2"
       >
         {/*CARDD*/}
         <div

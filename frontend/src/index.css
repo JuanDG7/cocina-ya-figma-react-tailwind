@@ -18,7 +18,7 @@
 
 @layer components {
   .label {
-    @apply font-worksans text-oscuro text-[16px] font-[500] block mb-[5px];
+    @apply font-worksans text-oscuro text-[16px] font-[500] block mb-1;
   }
 
   .input {

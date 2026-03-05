@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import StepItem from "./StepItem";
-
+//todo aqui solo esta preparado para trabajar con 1 foto, y mi bakcend con varias fotos
 type StepsState = {
   id: string;
   text: string;
@@ -25,19 +25,34 @@ export default function StepsList({ initialSteps = [] }: initialStepsProps) {
           photo: s.photos?.[0]
             ? {
                 file: null,
-                preview: s.photos[0].startsWith("blob:")
-                  ? s.photos[0]
-                  : `http://localhost:8080/${s.photos[0]}`,
+                preview: `http://localhost:8080/${s.photos[0]}`,
               }
             : null,
         }))
       : [{ id: uuidv4(), text: "", photo: null }]
   );
 
+  // const [steps, setSteps] = useState<StepsState[]>(
+  //   initialSteps.length > 0
+  //     ? initialSteps.map((s) => ({
+  //         id: s.id || uuidv4(), // id estable del paso
+  //         text: s.text || "",
+  //         photo: s.photos?.[0]
+  //           ? {
+  //               file: null,
+  //               preview: s.photos[0].startsWith("blob:")
+  //                 ? s.photos[0]
+  //                 : `http://localhost:8080/${s.photos[0]}`,
+  //             }
+  //           : null,
+  //       }))
+  //     : [{ id: uuidv4(), text: "", photo: null }]
+  // );
+
   const allURLs = useRef<Set<string>>(new Set());
   useEffect(() => {
     return () => {
-      allURLs.current.forEach((u) => URL.revokeObjectURL(u));
+      allURLs.current.forEach((u) => URL.revokeObjectURL(u)); //aqui forEach es un metodo de SET
       allURLs.current.clear();
     };
   }, []);

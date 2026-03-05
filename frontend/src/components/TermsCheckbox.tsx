@@ -24,6 +24,7 @@ export default function TermsCheckbox({
       />
       <span className="text-grisoscuro">
         I agree with{" "}
+        {/* TODO: modificar a LINK el anchor y poner pagina de terminos y condiciones*/}
         <a href="/terms" className="underline underline-offset-2 text-primary">
           Terms & Conditions
         </a>

@@ -28,7 +28,7 @@ export default (req: Request, res: Response, next: NextFunction) => {
       statusCode?: number;
     };
     error.statusCode = 401;
-    throw error; // ❌ corta el flujo y lo maneja el middleware global de errores
+    return next(error); // ❌ corta el flujo y lo maneja el middleware global de errores
   }
   const token = authHeader.split(" ")[1];
   let decodedToken;
@@ -37,16 +37,18 @@ export default (req: Request, res: Response, next: NextFunction) => {
   try {
     decodedToken = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
   } catch (err) {
-    const error = err as Error & { statusCode?: number };
-    error.statusCode = 500;
-    throw err;
+    const error = new Error("Token inválido o expirado.") as Error & {
+      statusCode?: number;
+    };
+    error.statusCode = 401;
+    return next(error);
   }
   if (!decodedToken) {
     const error = new Error("Not authenticated") as Error & {
       statusCode?: number;
     };
     error.statusCode = 401;
-    throw error;
+    return next(error);
   }
   req.userId = decodedToken.userId; //esto es string... el decodedToken.userId pq en el jwt.sign solo guarda string
   next();

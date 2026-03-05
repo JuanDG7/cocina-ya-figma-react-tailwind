@@ -10,6 +10,7 @@ import PostresImg from "../assets/categories/postres.webp";
 import PizzasImg from "../assets/categories/pizzas.webp";
 import SopasImg from "../assets/categories/sopas.webp";
 
+//TODO implementar SWIPER EN LAS IMAGENES! PARA PODER MOVERLAS CON CLICK AND DRAG
 type Categoria = { readonly name: string; readonly img: string };
 // 📌 Array de categorías (Single Source of Truth)
 const categories: Categoria[] = [
@@ -60,7 +61,7 @@ export default function CategoriesPage({ children }: CategoriesPageProps) {
           <li key={cat.name} className="snap-start   ">
             <Link
               to={`/categories/${cat.name.toLowerCase().replace(/\s+/g, "-")}`}
-              className="flex flex-col items-center gap-2  w-full"
+              className="flex flex-col items-center gap-2"
             >
               {/*CARDD*/}
               <div
@@ -70,7 +71,7 @@ export default function CategoriesPage({ children }: CategoriesPageProps) {
                 <img
                   src={cat.img}
                   alt={cat.name}
-                  className="h-[68px] w-[68px] object-scale-cover"
+                  className="h-[68px] w-[68px]"
                 />
                 <span className="mt-2 text-[12px] leading-[12px] font-normal text-oscuro text-center font-worksans">
                   {cat.name}

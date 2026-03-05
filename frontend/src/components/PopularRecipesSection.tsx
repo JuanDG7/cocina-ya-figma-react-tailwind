@@ -2,6 +2,7 @@ import RecipeCard from "./RecipeCard";
 
 import { Link } from "react-router-dom";
 
+//TODO mostrar las recetas que realmente estan en la base de datos y no placeholders de comida como ahora esta pasta alfredo cremosa , hamburguesa casera, ramen express
 type Meal = {
   id: string;
   title: string;
@@ -69,7 +70,7 @@ export default function PopularRecipesSection({
         aria-label="Listado de recetas populares"
       >
         {sample.map((meal) => (
-          <li key={meal.id} className="snap-start shrink-0 first:ml-[-105px]">
+          <li key={meal.id} className="snap-start">
             <RecipeCard meal={meal} />
           </li>
         ))}

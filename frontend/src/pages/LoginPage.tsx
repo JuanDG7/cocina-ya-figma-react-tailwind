@@ -22,18 +22,26 @@ type LoginPageActionResponse = ResponseSuccess | ResponseError;
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const actionData = useActionData() as LoginPageActionResponse;
+  const actionData = useActionData<LoginPageActionResponse>();
 
   return (
     <>
-      <div className="fixed inset-0 -z-10 bg-[url(/img/background.svg)] bg-cover bg-center" />
-      <section className=" w-full pb-10   mx-auto px-10 pt-8  min-h-dvh overflow-y-auto  ">
+      <section className=" w-full pb-10   mx-auto px-10 pt-8  min-h-dvh">
         {/* LOGO  */}
         {/* HECHO POR VOS .  */}
         <div className="flex flex-col  gap-y-2 mb-[55px]">
           <picture>
             <source srcSet={logoWebp} type="image/webp" />
             <img
+              //TODO aqui podria colocar esto, para que sea mas responsive
+              /*
+<picture>
+  <source media="(min-width: 768px)" srcSet="logo-desktop.webp" />
+  <source media="(max-width: 767px)" srcSet="logo-mobile.webp" />
+  <img src="logo-default.png" alt="Logo" />
+</picture>
+
+              */
               className="w-[290px] mx-auto"
               width={290}
               src={logoPng}
@@ -64,6 +72,7 @@ export default function LoginPage() {
                 inputMode="email"
                 autoCapitalize="none"
                 autoCorrect="off"
+                autoComplete="username"
               />
             </div>
             {/* Password*/}
@@ -75,7 +84,7 @@ export default function LoginPage() {
               <div className="relative">
                 {" "}
                 <input
-                  className="input pr-10 "
+                  className="input pr-10  "
                   type={showPassword ? "text" : "password"}
                   name="password"
                   id="password"
@@ -85,7 +94,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                  className="absolute top-0 bottom-0 right-3 flex items-center cursor-pointer"
                 >
                   <img
                     className="w-5 h-5"
@@ -99,6 +108,7 @@ export default function LoginPage() {
             </div>
           </div>
           {/*                                          Olvidate tu contraseña */}
+          {/*TODO envez de anchor usar Link, y escribir codigo para resetear contrasenha */}
           <div className="text-right mb-13">
             <a
               href=""
@@ -110,7 +120,7 @@ export default function LoginPage() {
           {/*                                           INICIAR SESSION */}{" "}
           <button
             type="submit"
-            className=" mb-[38px] mx-auto block bg-secondary py-[12px] w-full text-white rounded-full font-worksans font-[500] text-[16px]"
+            className=" mb-[38px]  block w-full bg-secondary py-[12px]  text-white rounded-full font-worksans font-[500] text-[16px]"
           >
             Iniciar sesión
           </button>

@@ -14,6 +14,8 @@ import CategorySelector from "./CategorySelector";
 import StepsList from "./StepList";
 import { type Recipe } from "../types/recipe";
 
+//TODO sacar el button borrar receta?? ya queno hace nada cuando voy a crear un recipe new???
+
 type RecipeFormProps = {
   data?: Recipe;
   method: "put" | "post";
@@ -61,6 +63,7 @@ export default function RecipeForm({ data, method }: RecipeFormProps) {
               placeholder="Milanesa a la napolitana"
               className=" input "
               defaultValue={data ? data.titulo : ""}
+              title="Ingrese un titulo "
             />
           </div>
           {/* MÉTRICAS: kcal · minutos · porciones */}
@@ -123,7 +126,6 @@ export default function RecipeForm({ data, method }: RecipeFormProps) {
               Descripcion:Opcional
             </label>
             <textarea
-              type="textarea"
               name="descripcion"
               id="descripcion"
               placeholder="Contanos un poco sobre tu receta"
@@ -140,7 +142,7 @@ export default function RecipeForm({ data, method }: RecipeFormProps) {
 
           <div className="w-[95%] space-y-5 pb-10">
             {" "}
-            <label className="self-start font-worksans text-oscuro text-[16px] font-[500] block mb-[2px]">
+            <label className=" font-worksans text-oscuro text-[16px] font-[500] block mb-[2px]">
               {" "}
               Consejos extra
             </label>

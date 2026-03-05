@@ -36,7 +36,7 @@ export default function HomePage() {
               placeholder="Buscar recetas !"
               className="input rounded-xl pl-12"
             />
-            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 ">
+            <span className="pointer-events-none absolute left-3 inset-y-0 flex items-center ">
               <img src={SearchIcon} alt="" className="size-5" />
             </span>
           </div>

@@ -6,7 +6,7 @@ import FireIcon from "../assets/icons/icon-fire.svg";
 import ClockIcon from "../assets/icons/icon-clock.svg";
 import MealIcon from "../assets/icons/icon-meal.svg";
 import Carbonata from "/img/recipes/carbonara3x.webp";
-
+//todo aqui en la base de datos deberia existir "favoritos"
 export default function FavoriteRecipePage() {
   const navigate = useNavigate();
   return (

@@ -47,7 +47,7 @@ export const signUp = async (
     if (!error.statusCode) {
       error.statusCode = 500;
     }
-    next(error);
+    return next(error);
   }
 };
 
@@ -92,10 +92,10 @@ export const login = async (
       userId: user._id.toString(),
     });
   } catch (err) {
-    const error = err as Error & { statusCode?: number };
+    const error = err as Error & { statusCode?: number; data?: unknown };
     if (!error.statusCode) {
       error.statusCode = 500;
     }
-    next(err);
+    return next(error);
   }
 };

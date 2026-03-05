@@ -15,7 +15,7 @@ type RecipeLoaderData = {
   recipe: Recipe;
 };
 
-export default function ViewRecipePage() {
+export default function RecipeDetail() {
   const navigate = useNavigate();
   const data = useRouteLoaderData("recipe") as RecipeLoaderData;
 

@@ -39,8 +39,8 @@ export default function RegisterPage() {
           ))}
         </ul>
       )}
-      <div className="fixed inset-0 -z-10 bg-[url(/img/background.svg)] bg-cover bg-center" />
-      <main className="w-full mx-auto px-10 min-h-dvh overflow-y-auto">
+
+      <main className="w-full mx-auto px-10 min-h-dvh">
         <header className="font-raleway text-[24px] text-center pt-19 font-semibold">
           <div className=" flex justify-between items-center">
             <button
@@ -51,8 +51,8 @@ export default function RegisterPage() {
               <img className="h-[24px] w-[24px]" src={IconLeftArrow} alt="" />
             </button>
             {/*TITULO */}
-            <div className="flex items-center gap-2">
-              <h1 className="text-[34px] font-semibold">Crear Receta</h1>
+            <div>
+              <h1 className="text-[34px] font-semibold">Crear cuenta</h1>
             </div>
             {/* Spacer derecho del mismo ancho que el botón izquierdo */}
             <div className="h-11 w-11" aria-hidden />{" "}
@@ -77,7 +77,7 @@ export default function RegisterPage() {
               />
             </div>
 
-            <div className="space-y-0">
+            <div className="">
               {/* EMAIL*/}
               {/* EXAMPLE@GMAIL.COM*/}
               <label className="label" htmlFor="email">
@@ -89,7 +89,7 @@ export default function RegisterPage() {
                 id="email"
                 placeholder="example@gmail.com"
                 className="input"
-                autoComplete="username"
+                autoComplete="email"
                 inputMode="email"
                 autoCapitalize="none"
                 autoCorrect="off"
@@ -98,7 +98,7 @@ export default function RegisterPage() {
 
             {/* Password*/}
             {/* ********************************/}
-            <div className="space-y-0">
+            <div className="">
               <label className="label" htmlFor="password">
                 Password
               </label>
@@ -130,7 +130,7 @@ export default function RegisterPage() {
 
             {/* Confirmar Password*/}
             {/* ********************************/}
-            <div className="space-y-0">
+            <div className="">
               <label className="label" htmlFor="confirmPassword">
                 Confirmar pasword
               </label>
@@ -143,7 +143,7 @@ export default function RegisterPage() {
                   name="confirmPassword"
                   id="confirmPassword"
                   placeholder="**************"
-                  autoComplete="new-password"
+                  autoComplete="off"
                 />
                 <button
                   type="button"

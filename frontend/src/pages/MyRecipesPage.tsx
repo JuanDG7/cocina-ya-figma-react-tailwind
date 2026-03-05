@@ -13,6 +13,8 @@ import EditIcon from "../assets/icons/icon-edit-document.svg";
 import FireIcon from "../assets/icons/icon-fire.svg";
 import ClockIcon from "../assets/icons/icon-clock.svg";
 import MealIcon from "../assets/icons/icon-meal.svg";
+import { redirect } from "react-router-dom";
+import { getToken } from "../util/auth";
 
 type MyRecipesLoaderData = {
   recipes: Recipe[];
@@ -136,7 +138,9 @@ export default function MyRecipesPage() {
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const page = url.searchParams.get("page") || 1;
-  const token = localStorage.getItem("token");
+
+  const token = getToken();
+  if (!token) return redirect("/"); //es redundante pq ya tengo un loader:requireAuth pero por seguridad puse
 
   const response = await fetch(
     `http://localhost:8080/recipe/my-recipes?page=${page}`,
@@ -148,10 +152,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
     }
   );
 
+  if (response.status === 401) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    return redirect("/");
+  }
   if (!response.ok) {
     throw new Response(
       JSON.stringify({ message: "Error al cargar tus recetas" }),
-      { status: 500 }
+      { status: response.status }
     );
   }
 

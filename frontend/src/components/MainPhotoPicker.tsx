@@ -16,12 +16,8 @@ export default function MainPhotoPicker({
   const handleChange = (events: React.ChangeEvent<HTMLInputElement>) => {
     const file = events.target.files?.[0];
     if (!file) return;
-
-    // Limpia el blob anterior y genera uno nuevo
-    setPreview((prev) => {
-      if (prev && prev.startsWith("blob:")) URL.revokeObjectURL(prev); //libera memoria, libera el blop ocupado por el file
-      return URL.createObjectURL(file);
-    });
+    const objectUrl = URL.createObjectURL(file);
+    setPreview(objectUrl);
   };
 
   // 🧹 Limpieza de blobs cuando cambia o se desmonta el componente

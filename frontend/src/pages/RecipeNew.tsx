@@ -5,7 +5,7 @@ import RecipeForm from "../components/RecipeForm";
 import HeartOutlineIcon from "../assets/icons/icon-heart-outline.svg";
 import IconLeftArrow from "../assets/icons/icon-left-arrow.svg";
 
-export default function NewRecipePage() {
+export default function RecipeNew() {
   const navigate = useNavigate();
 
   return (

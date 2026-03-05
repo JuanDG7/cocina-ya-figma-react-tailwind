@@ -3,6 +3,7 @@ import {
   Link,
   useLoaderData,
   LoaderFunctionArgs,
+  redirect,
 } from "react-router-dom";
 import type { Recipe } from "../types/recipe";
 
@@ -10,6 +11,7 @@ import RecipeList from "../components/RecipeList";
 
 import IconLeftArrow from "../assets/icons/icon-left-arrow.svg";
 import EditIcon from "../assets/icons/icon-edit-document.svg";
+import { getToken } from "../util/auth";
 
 type RecipesLoaderData = {
   recipes: Recipe[];
@@ -23,7 +25,7 @@ export default function Recipes() {
     recipes: data,
     totalItems,
     page,
-  } = useLoaderData() as RecipesLoaderData;
+  } = useLoaderData<RecipesLoaderData>();
 
   const ITEMS_PER_PAGE = 2; // ajustá según tu backend
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
@@ -78,7 +80,8 @@ export default function Recipes() {
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const page = url.searchParams.get("page") || 1;
-  const token = localStorage.getItem("token");
+  const token = getToken();
+  if (!token) return redirect("/");
 
   const response = await fetch(
     `http://localhost:8080/recipe/recipes?page=${page}`,
@@ -90,6 +93,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
       },
     }
   );
+
+  if (response.status === 401) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    return redirect("/");
+  }
+
   if (!response.ok) {
     throw new Response(JSON.stringify({ message: "Error en Recipes.jsx" }), {
       status: 500,
