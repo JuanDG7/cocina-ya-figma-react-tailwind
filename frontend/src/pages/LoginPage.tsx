@@ -26,7 +26,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <section className=" w-full pb-10   mx-auto px-10 pt-8  min-h-dvh">
+      <section className=" w-full py-10 px-6 sm:px-8   md:px-10  lg:px-12 mx-auto min-h-dvh lg:max-w-[640px] md:max-w-[520px] md:bg-white/40 md:rounded-3xl md:shadow-sm lg:bg-white/60 lg:rounded-3xl lg:shadow-sm lg:backdrop-blur lg:min-h-0 md:min-h-0">
         {/* LOGO  */}
         {/* HECHO POR VOS .  */}
         <div className="flex flex-col  gap-y-2 mb-[55px]">
@@ -42,7 +42,7 @@ export default function LoginPage() {
 </picture>
 
               */
-              className="w-[290px] mx-auto"
+              className="w-[clamp(220px,30vw,280px)] mx-auto"
               width={290}
               src={logoPng}
               alt="Logo de CocinaYa"

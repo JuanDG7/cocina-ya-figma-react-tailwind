@@ -4,7 +4,9 @@ export default function AuthLayout() {
   return (
     <main className="max-w-screen-md min-h-dvh mx-auto ">
       <div className="fixed inset-0 -z-10 bg-[url(/img/background.svg)] bg-cover bg-center" />
-      <Outlet />
+      <div className="md:min-h-dvh md:flex md:items-center md:justify-center md:px-8">
+        <Outlet />
+      </div>
     </main>
   );
 }

@@ -40,7 +40,7 @@ export default function RegisterPage() {
         </ul>
       )}
 
-      <main className="w-full mx-auto px-10 min-h-dvh">
+      <main className="w-full mx-auto px-10  md:max-w-[520px] lg:max-w-[640px] md:bg-white/40 md:rounded-3xl md:shadow-sm lg:bg-white/60 lg:backdrop-blur ">
         <header className="font-raleway text-[24px] text-center pt-19 font-semibold">
           <div className=" flex justify-between items-center">
             <button

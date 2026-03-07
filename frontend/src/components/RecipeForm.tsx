@@ -213,6 +213,7 @@ export async function action({
     const eventId = params.recipeId;
     url = "http://localhost:8080/recipe/" + eventId;
   }
+
   const response = await fetch(url, {
     method: request.method,
     headers: { Authorization: "Bearer " + token },

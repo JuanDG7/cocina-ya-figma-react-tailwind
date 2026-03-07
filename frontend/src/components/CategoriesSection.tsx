@@ -52,7 +52,7 @@ export default function CategoriesPage({ children }: CategoriesPageProps) {
         className="
           px-4 mt-3  flex flex-nowrap  gap-2 overflow-y-visible overflow-x-auto snap-x snap-mandatory pb-2 pt-2
            scroll-ps-4 scroll-pe-4  [overflow-clip-margin:14px] 
-          touch-pan-x overscroll-x-contain [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden
+          touch-pan-x overscroll-x-contain [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:grid lg:grid-cols-6 lg:gap-4 lg:overflow-visible lg:snap-none
           
         "
         aria-label="Listado de categorías"

@@ -59,7 +59,6 @@ export default function MainPhotoPicker({
         name="mainPhoto"
         type="file"
         accept="image/*"
-        onClick={(e) => (e.currentTarget.value = "")} // limpiar ANTES del diálogo POR SI EL USUARIO SELECCIONA 2 VCS EL MISMO ARCHIVO, si esto ONCHANGE NO DISPARA SI ES EL MISMO FILE
         onChange={handleChange}
         className="absolute inset-0 opacity-0 cursor-pointer"
         style={{ WebkitAppearance: "none" }} //esta linea no importa pq el input esta invisible con opacity-0

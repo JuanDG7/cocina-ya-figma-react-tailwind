@@ -30,6 +30,7 @@ export default function Modal({
         {/* Botones */}
         <div className="flex justify-center gap-3">
           <button
+            type="button"
             disabled={isSubmitting}
             onClick={onClose}
             className="px-5 py-2 rounded-full border border-primary text-primary font-semibold hover:bg-primary/10 transition"
@@ -38,6 +39,7 @@ export default function Modal({
           </button>
 
           <button
+            type="button"
             disabled={isSubmitting}
             onClick={onConfirm}
             className="px-5 py-2 rounded-full bg-primary text-white font-semibold hover:bg-primary transition"
