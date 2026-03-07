@@ -10,6 +10,7 @@ import type { Recipe } from "../types/recipe";
 import HeartOutlineIcon from "../assets/icons/icon-heart-outline.svg";
 import IconLeftArrow from "../assets/icons/icon-left-arrow.svg";
 import RecipeItem from "../components/RecipeItem";
+import api from "../lib/axios";
 
 type RecipeLoaderData = {
   recipe: Recipe;
@@ -52,18 +53,17 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const id = params.recipeId;
 
   const token = localStorage.getItem("token");
-  const response = await fetch(`http://localhost:8080/recipe/${id}`, {
-    headers: { Authorization: "Bearer " + token },
-  });
 
-  if (!response.ok) {
+  try {
+    const { data } = await api.get(`/recipe/${id}`, {
+      headers: { Authorization: "Bearer " + token },
+    });
+    return data;
+  } catch (error: any) {
     throw new Response(
       JSON.stringify({ message: "error en el loader de RecipeDetail.jsx" }),
-      { status: response.status }
+      { status: error.response?.status || 500 }
     );
-  } else {
-    const data = await response.json();
-    return data;
   }
 }
 
@@ -72,17 +72,54 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   const token = localStorage.getItem("token");
 
-  const response = await fetch(`http://localhost:8080/recipe/${recipeId}`, {
-    method: "DELETE",
-    headers: { Authorization: "Bearer " + token },
-  });
-
-  if (!response.ok) {
+  try {
+    await api.delete(`/recipe/${recipeId}`, {
+      headers: { Authorization: "Bearer " + token },
+    });
+    return redirect("/homepage");
+  } catch (error: any) {
     throw new Response(
       JSON.stringify({ message: "Error al eliminar la receta" }),
-      { status: response.status }
+      { status: error.response?.status || 500 }
     );
   }
-
-  return redirect("/homepage");
 }
+
+// export async function loader({ request, params }: LoaderFunctionArgs) {
+//   const id = params.recipeId;
+
+//   const token = localStorage.getItem("token");
+//   const response = await fetch(`http://localhost:8080/recipe/${id}`, {
+//     headers: { Authorization: "Bearer " + token },
+//   });
+
+//   if (!response.ok) {
+//     throw new Response(
+//       JSON.stringify({ message: "error en el loader de RecipeDetail.jsx" }),
+//       { status: response.status }
+//     );
+//   } else {
+//     const data = await response.json();
+//     return data;
+//   }
+// }
+
+// export async function action({ request, params }: ActionFunctionArgs) {
+//   const recipeId = params.recipeId;
+
+//   const token = localStorage.getItem("token");
+
+//   const response = await fetch(`http://localhost:8080/recipe/${recipeId}`, {
+//     method: "DELETE",
+//     headers: { Authorization: "Bearer " + token },
+//   });
+
+//   if (!response.ok) {
+//     throw new Response(
+//       JSON.stringify({ message: "Error al eliminar la receta" }),
+//       { status: response.status }
+//     );
+//   }
+
+//   return redirect("/homepage");
+// }

@@ -8,6 +8,7 @@ import EyeOffIcon from "../assets/icons/icon-mage_eye-off.svg";
 import EyeOnIcon from "../assets/icons/icon-mage_eye.svg";
 import IconLeftArrow from "../assets/icons/icon-left-arrow.svg";
 import TermsCheckbox from "../components/TermsCheckbox";
+import api from "../lib/axios";
 
 type ResponseSuccess = {
   status: "success";
@@ -252,16 +253,47 @@ export async function action({ request }: ActionFunctionArgs) {
   //   }),
   // });
 
-  const response = await fetch("http://localhost:8080/auth/signup", {
-    method: "PUT",
-    body: formData,
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    return { status: "error", ...errorData } as ResponseError;
+  try {
+    await api.put("/auth/signup", formData);
+    return redirect("/");
+  } catch (error: any) {
+    return { status: "error", ...error.response?.data } as ResponseError;
   }
-
-  // const data1 = await response.json();
-  return redirect("/");
 }
+
+// export async function action2({ request }: ActionFunctionArgs) {
+
+//   const formData = await request.formData();
+
+//   // const data = Object.fromEntries(formData.entries());   <---   ESTO ES SOLAMENTE SI QUIERO HACER VALIDACION MANUAL
+
+//   // // Validación simple antes de enviar
+//   // if (!data.email || !data.password || !data.nombre) {
+//   //   throw new Response("Faltan campos obligatorios", { status: 400 });
+//   // }
+
+//   // const response = await fetch("http://localhost:8080/auth/signup", {
+//   //   method: "PUT",
+//   //   headers: { "Content-Type": "application/json" },
+//   //   body: JSON.stringify({
+//   //     name: data.nombre,
+//   //     email: data.email,
+//   //     password: data.password,
+//   //   }),
+//   // });
+
+//   const response = await fetch("http://localhost:8080/auth/signup", {
+//     method: "PUT",
+//     body: formData,
+//   });
+
+//   if (!response.ok) {
+//     const errorData = await response.json();
+//     return { status: "error", ...errorData } as ResponseError;
+//   }
+
+//   // const data1 = await response.json();
+//   return redirect("/");
+// }
+
+//LO QUE ESTA ARRIBA ES SIN IMPLEMENTAR AXIOS!!!!

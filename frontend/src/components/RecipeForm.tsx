@@ -13,6 +13,7 @@ import IngredientList from "./IngredientList";
 import CategorySelector from "./CategorySelector";
 import StepsList from "./StepList";
 import { type Recipe } from "../types/recipe";
+import api from "../lib/axios";
 
 //TODO sacar el button borrar receta?? ya queno hace nada cuando voy a crear un recipe new???
 
@@ -206,38 +207,76 @@ export async function action({
   const formData = await request.formData(); // RAW (string o null)
 
   const token = localStorage.getItem("token");
-  let url = "http://localhost:8080/recipe";
-
+  let url = "/recipe";
   console.log("🧾 METHOD ES:", request.method);
+
   if (request.method === "PUT") {
-    const eventId = params.recipeId;
-    url = "http://localhost:8080/recipe/" + eventId;
+    const recipeId = params.recipeId;
+    url = `/recipe/${recipeId}`;
   }
-
-  const response = await fetch(url, {
-    method: request.method,
-    headers: { Authorization: "Bearer " + token },
-    body: formData,
-  });
-
-  // if (response.status === 422) {
-  //   //si vuelve un error de validacion del backend, va a useActionData() en el RecipeForm
-  //   console.log(response);
-
-  //   return response;
-  // }
-
-  if (response.status === 422) {
-    //si vuelve un error de validacion del backend, va a useActionData() en el RecipeForm
-    const actionData: ActionData = await response.json();
-
-    return actionData;
-  }
-
-  if (!response.ok) {
-    throw new Response(JSON.stringify({ message: "error en RecipeForm" }), {
-      status: response.status,
+  try {
+    //AQUI PODRIA NO USAR CONST {DATA}
+    const { data } = await api({
+      url: url,
+      method: request.method,
+      headers: { Authorization: "Bearer " + token },
+      data: formData,
     });
+    return redirect("/homepage");
+  } catch (error: any) {
+    if (error.response?.status === 422) {
+      return error.response.data;
+    }
+    throw new Response(
+      JSON.stringify({ message: "error en RecipeForm action function" }),
+      {
+        status: error.response?.status || 500,
+      }
+    );
   }
-  return redirect("/homepage");
 }
+
+// export async function action({
+//   request,
+//   params,
+// }: ActionFunctionArgs): Promise<Response | ActionData> {
+//   const formData = await request.formData(); // RAW (string o null)
+
+//   const token = localStorage.getItem("token");
+//   let url = "http://localhost:8080/recipe";
+
+//   console.log("🧾 METHOD ES:", request.method);
+//   if (request.method === "PUT") {
+//     const eventId = params.recipeId;
+//     url = "http://localhost:8080/recipe/" + eventId;
+//   }
+
+//   const response = await fetch(url, {
+//     method: request.method,
+//     headers: { Authorization: "Bearer " + token },
+//     body: formData,
+//   });
+
+//   // if (response.status === 422) {
+//   //   //si vuelve un error de validacion del backend, va a useActionData() en el RecipeForm
+//   //   console.log(response);
+
+//   //   return response;
+//   // }
+
+//   if (response.status === 422) {
+//     //si vuelve un error de validacion del backend, va a useActionData() en el RecipeForm
+//     const actionData: ActionData = await response.json();
+
+//     return actionData;
+//   }
+
+//   if (!response.ok) {
+//     throw new Response(JSON.stringify({ message: "error en RecipeForm" }), {
+//       status: response.status,
+//     });
+//   }
+//   return redirect("/homepage");
+// }
+
+// lo de arriba es la version antigua sin AXIOS

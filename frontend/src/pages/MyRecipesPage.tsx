@@ -16,6 +16,7 @@ import ClockIcon from "../assets/icons/icon-clock.svg";
 import MealIcon from "../assets/icons/icon-meal.svg";
 
 import { getToken } from "../util/auth";
+import api from "../lib/axios";
 
 type MyRecipesLoaderData = {
   recipes: Recipe[];
@@ -153,34 +154,64 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const token = getToken();
   if (!token) return redirect("/");
 
-  const response = await fetch(
-    `http://localhost:8080/recipe/my-recipes?page=${page}`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
+  try {
+    const { data } = await api.get("/recipe/my-recipes", {
+      headers: { Authorization: "Bearer " + token },
+      params: { page },
+    });
+    return {
+      recipes: data.recipes,
+      totalItems: data.totalItems,
+      page: Number(page),
+    };
+  } catch (error: any) {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      return redirect("/");
     }
-  );
-
-  if (response.status === 401) {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    return redirect("/");
-  }
-
-  if (!response.ok) {
     throw new Response(
       JSON.stringify({ message: "Error al cargar tus recetas" }),
-      { status: response.status }
+      { status: error.response?.status || 500 }
     );
   }
-
-  const resData = await response.json();
-
-  return {
-    recipes: resData.recipes,
-    totalItems: resData.totalItems,
-    page: Number(page),
-  };
 }
+
+// export async function loader({ request }: LoaderFunctionArgs) {
+//   const url = new URL(request.url);
+//   const page = url.searchParams.get("page") || 1;
+
+//   const token = getToken();
+//   if (!token) return redirect("/");
+
+//   const response = await fetch(
+//     `http://localhost:8080/recipe/my-recipes?page=${page}`,
+//     {
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: "Bearer " + token,
+//       },
+//     }
+//   );
+
+//   if (response.status === 401) {
+//     localStorage.removeItem("token");
+//     localStorage.removeItem("userId");
+//     return redirect("/");
+//   }
+
+//   if (!response.ok) {
+//     throw new Response(
+//       JSON.stringify({ message: "Error al cargar tus recetas" }),
+//       { status: response.status }
+//     );
+//   }
+
+//   const resData = await response.json();
+
+//   return {
+//     recipes: resData.recipes,
+//     totalItems: resData.totalItems,
+//     page: Number(page),
+//   };
+// }

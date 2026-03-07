@@ -12,6 +12,7 @@ import RecipeList from "../components/RecipeList";
 import IconLeftArrow from "../assets/icons/icon-left-arrow.svg";
 import EditIcon from "../assets/icons/icon-edit-document.svg";
 import { getToken } from "../util/auth";
+import api from "../lib/axios";
 
 type RecipesLoaderData = {
   recipes: Recipe[];
@@ -77,35 +78,63 @@ export default function Recipes() {
   );
 }
 
+// export async function loader2({ request }: LoaderFunctionArgs) {
+//   const url = new URL(request.url);
+//   const page = url.searchParams.get("page") || 1;
+//   const token = getToken();
+//   if (!token) return redirect("/");
+
+//   const response = await fetch(
+//     `http://localhost:8080/recipe/recipes?page=${page}`,
+//     {
+//       method: "GET",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: "Bearer " + token,
+//       },
+//     }
+//   );
+
+//   if (response.status === 401) {
+//     localStorage.removeItem("token");
+//     localStorage.removeItem("userId");
+//     return redirect("/");
+//   }
+
+//   if (!response.ok) {
+//     throw new Response(JSON.stringify({ message: "Error en Recipes.jsx" }), {
+//       status: 500,
+//     });
+//   }
+
+//   const resData = await response.json();
+//   return { recipes: resData.recipes, totalItems: resData.totalItems, page };
+// }
+
+// LO DE ARRIBA ES VERSION VIEJA SIN AXIOS
+
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const page = url.searchParams.get("page") || 1;
   const token = getToken();
   if (!token) return redirect("/");
 
-  const response = await fetch(
-    `http://localhost:8080/recipe/recipes?page=${page}`,
-    {
-      method: "GET",
+  try {
+    const { data } = await api.get("/recipe/recipes", {
+      params: { page },
       headers: {
-        "Content-Type": "application/json",
         Authorization: "Bearer " + token,
       },
+    });
+    return { recipes: data.recipes, totalItems: data.totalItems, page };
+  } catch (error: any) {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      return redirect("/");
     }
-  );
-
-  if (response.status === 401) {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    return redirect("/");
-  }
-
-  if (!response.ok) {
     throw new Response(JSON.stringify({ message: "Error en Recipes.jsx" }), {
       status: 500,
     });
   }
-
-  const resData = await response.json();
-  return { recipes: resData.recipes, totalItems: resData.totalItems, page };
 }

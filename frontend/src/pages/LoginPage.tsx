@@ -7,6 +7,7 @@ import EyeOffIcon from "../assets/icons/icon-mage_eye-off.svg";
 
 import logoWebp from "../assets/logo-cocinaya.webp";
 import logoPng from "../assets/logo-cocinaya.png";
+import api from "../lib/axios";
 
 type ResponseSuccess = {
   token: string;
@@ -198,40 +199,61 @@ export default function LoginPage() {
   );
 }
 
+// export async function action2({ request, params }: ActionFunctionArgs) {
+//   // 1️⃣ Obtener los datos del formulario
+//   const formData = await request.formData();
+//   const email = formData.get("email");
+//   const password = formData.get("password");
+//   const data = {
+//     email,
+//     password,
+//   };
+
+//   // 2️⃣ Enviar la solicitud al backend
+//   const response = await fetch("http://localhost:8080/auth/login", {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify(data),
+//   });
+
+//   // 3️⃣ Manejar errores
+//   if (!response.ok) {
+//     const errorData = await response.json();
+//     // ✅ devolvés un objeto que React Router le pasa al componente
+//     return { error: errorData.message || "No fue posible autenticarse." };
+//   }
+
+//   // 4️⃣ Obtener datos del backend (token, userId, etc.)
+//   const resData = await response.json();
+//   console.log(`El token es 🚩:${resData.token}`);
+//   console.log(`El userId es 🚩:${resData.userId}`);
+
+//   // 💾 Guardar token en localStorage (opcional)
+//   localStorage.setItem("token", resData.token);
+//   localStorage.setItem("userId", resData.userId);
+//   // 5️⃣ Redirigir al usuario
+//   return redirect("/homepage");
+// }
+
 export async function action({ request, params }: ActionFunctionArgs) {
   // 1️⃣ Obtener los datos del formulario
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
-  const data = {
-    email,
-    password,
-  };
 
-  // 2️⃣ Enviar la solicitud al backend
-  const response = await fetch("http://localhost:8080/auth/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-
-  // 3️⃣ Manejar errores
-  if (!response.ok) {
-    const errorData = await response.json();
-    // ✅ devolvés un objeto que React Router le pasa al componente
-    return { error: errorData.message || "No fue posible autenticarse." };
+  try {
+    const response = await api.post("/auth/login", {
+      email,
+      password,
+    });
+    localStorage.setItem("token", response.data.token);
+    localStorage.setItem("userId", response.data.userId);
+    return redirect("/homepage");
+  } catch (error: any) {
+    return {
+      error: error.response?.data?.message || "no fue posible autenticarse.",
+    };
   }
-
-  // 4️⃣ Obtener datos del backend (token, userId, etc.)
-  const resData = await response.json();
-  console.log(`El token es 🚩:${resData.token}`);
-  console.log(`El userId es 🚩:${resData.userId}`);
-
-  // 💾 Guardar token en localStorage (opcional)
-  localStorage.setItem("token", resData.token);
-  localStorage.setItem("userId", resData.userId);
-  // 5️⃣ Redirigir al usuario
-  return redirect("/homepage");
 }
