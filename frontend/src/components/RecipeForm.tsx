@@ -206,7 +206,6 @@ export async function action({
 }: ActionFunctionArgs): Promise<Response | ActionData> {
   const formData = await request.formData(); // RAW (string o null)
 
-  const token = localStorage.getItem("token");
   let url = "/recipe";
   console.log("🧾 METHOD ES:", request.method);
 
@@ -219,7 +218,7 @@ export async function action({
     const { data } = await api({
       url: url,
       method: request.method,
-      headers: { Authorization: "Bearer " + token },
+
       data: formData,
     });
     return redirect("/homepage");

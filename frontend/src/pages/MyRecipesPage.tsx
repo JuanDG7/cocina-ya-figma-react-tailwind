@@ -151,12 +151,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const page = url.searchParams.get("page") || 1;
 
-  const token = getToken();
-  if (!token) return redirect("/");
-
   try {
     const { data } = await api.get("/recipe/my-recipes", {
-      headers: { Authorization: "Bearer " + token },
       params: { page },
     });
     return {

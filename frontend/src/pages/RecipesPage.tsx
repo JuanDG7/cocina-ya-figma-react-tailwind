@@ -116,15 +116,11 @@ export default function Recipes() {
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const page = url.searchParams.get("page") || 1;
-  const token = getToken();
-  if (!token) return redirect("/");
 
   try {
     const { data } = await api.get("/recipe/recipes", {
       params: { page },
-      headers: {
-        Authorization: "Bearer " + token,
-      },
+      headers: {},
     });
     return { recipes: data.recipes, totalItems: data.totalItems, page };
   } catch (error: any) {

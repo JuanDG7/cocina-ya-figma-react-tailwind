@@ -81,13 +81,15 @@ export default function RecipeItem({ recipe }: RecipeItemProps) {
             </span>
             <div className="flex flex-col gap-3">
               <p className="text-[16px] leading-[24px]">{step.text}</p>
-              <div className="flex gap-3">
-                <img
-                  src={`http://localhost:8080/${step.photos[0]}`}
-                  alt="Ingredientes ajo, cebolla y panceta"
-                  className="h-28 w-28 rounded-lg object-cover"
-                />
-              </div>
+              {step.photos?.[0] && (
+                <div className="flex gap-3">
+                  <img
+                    src={`http://localhost:8080/${step.photos[0]}`}
+                    alt="Ingredientes ajo, cebolla y panceta"
+                    className="h-28 w-28 rounded-lg object-cover"
+                  />
+                </div>
+              )}
             </div>
           </li>
         ))}

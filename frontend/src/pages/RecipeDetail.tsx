@@ -52,12 +52,8 @@ export default function RecipeDetail() {
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const id = params.recipeId;
 
-  const token = localStorage.getItem("token");
-
   try {
-    const { data } = await api.get(`/recipe/${id}`, {
-      headers: { Authorization: "Bearer " + token },
-    });
+    const { data } = await api.get(`/recipe/${id}`, {});
     return data;
   } catch (error: any) {
     throw new Response(
@@ -70,12 +66,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export async function action({ request, params }: ActionFunctionArgs) {
   const recipeId = params.recipeId;
 
-  const token = localStorage.getItem("token");
-
   try {
-    await api.delete(`/recipe/${recipeId}`, {
-      headers: { Authorization: "Bearer " + token },
-    });
+    await api.delete(`/recipe/${recipeId}`, {});
     return redirect("/homepage");
   } catch (error: any) {
     throw new Response(
