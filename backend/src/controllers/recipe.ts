@@ -1,4 +1,8 @@
-import { validationResult } from "express-validator";
+import {
+  CreateRecipeInput,
+  createRecipeSchema,
+  UpdateRecipeInput,
+} from "../schemas/recipe";
 import Recipe from "../models/recipe";
 import fs from "fs";
 import path from "path";
@@ -111,18 +115,18 @@ export const createRecipe = async (
   console.log("📩 Req Body:", req.body);
   console.log("📷 Req Files:", req.files);
 
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
+  const result = createRecipeSchema.safeParse(req.body);
+  if (!result.success) {
     cleanupUploadedFiles(req.files);
-    const error = new Error("Validacion fallo, data incorrecta") as Error & {
+    const error = new Error("Validacion fallo, datos incorrectos") as Error & {
       statusCode?: number;
       data?: unknown;
     };
     error.statusCode = 422;
-    error.data = errors.array();
-    return next(error); // ✅ no rompe el flujo, pasa al manejador global
+    error.data = result.error.issues;
+    return next(error);
   }
-
+  const body: CreateRecipeInput = result.data;
   type MulterFiles = {
     mainPhoto?: Express.Multer.File[];
     "stepPhotos[]"?: Express.Multer.File[];
@@ -155,43 +159,16 @@ export const createRecipe = async (
 
   // 🚨 Si no llegó la imagen principal
 
-  const titulo = req.body.titulo;
-  const calorias = req.body.calorias;
-  const tiempoMin = req.body.tiempoMin;
-  const porciones = req.body.porciones;
-  const descripcion = req.body.descripcion;
-  const categoria = req.body.categoria;
-  const consejos = req.body.consejos;
-
-  // arrays (normalizados)
-  const stepText = Array.isArray(req.body.stepText)
-    ? req.body.stepText
-    : req.body.stepText
-    ? [req.body.stepText]
-    : [];
-
-  const ingredientsName = Array.isArray(req.body.ingredientsName)
-    ? req.body.ingredientsName
-    : req.body.ingredientsName
-    ? [req.body.ingredientsName]
-    : [];
-  const ingredientsAmount = Array.isArray(req.body.ingredientsAmount)
-    ? req.body.ingredientsAmount
-    : req.body.ingredientsAmount
-    ? [req.body.ingredientsAmount]
-    : [];
-
-  // ingredientes
-  if (ingredientsName.length !== ingredientsAmount.length) {
-    cleanupUploadedFiles(req.files);
-    const error = new Error("Ingredientes desalineados") as Error & {
-      statusCode?: number;
-      data?: unknown;
-    };
-    error.statusCode = 422;
-    error.data = [{ msg: "Los nombres y cantidades no coinciden" }];
-    return next(error);
-  }
+  const titulo = body.titulo;
+  const calorias = body.calorias;
+  const tiempoMin = body.tiempoMin;
+  const porciones = body.porciones;
+  const descripcion = body.descripcion;
+  const categoria = body.categoria;
+  const consejos = body.consejos;
+  const stepText = body.stepText;
+  const ingredientsName = body.ingredientsName;
+  const ingredientsAmount = body.ingredientsAmount;
 
   const ingredients = ingredientsName
     .map((name: string, index: number) => ({
@@ -216,7 +193,7 @@ export const createRecipe = async (
     descripcion,
     categoria,
     consejos,
-    imageUrl: imageUrl,
+    imageUrl,
     ingredients,
     steps,
     creator: req.userId, //esto es un string pero mongoose al llevarlo a su bd lo convierto a un ObjectId
@@ -285,16 +262,7 @@ export const updateRecipe = async (
   console.log("📷 FILES:", req.files);
 
   const recipeId = req.params.recipeId;
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const error = new Error("Validación falló, datos incorrectos") as Error & {
-      statusCode?: number;
-      errorDetails?: unknown;
-    };
-    error.statusCode = 422;
-    error.errorDetails = errors.array();
-    return next(error);
-  }
+  const body: UpdateRecipeInput = req.body;
 
   type MulterFiles = {
     mainPhoto?: Express.Multer.File[];
@@ -304,21 +272,13 @@ export const updateRecipe = async (
   const files = req.files as MulterFiles;
 
   // 📸 FOTO PRINCIPAL NUEVA O EXISTENTE
-  let mainPhoto = files?.mainPhoto?.[0]?.path || req.body.imageUrl;
+  let mainPhoto = files?.mainPhoto?.[0]?.path || body.imageUrl || "";
   if (mainPhoto) mainPhoto = mainPhoto.replace(/\\/g, "/");
 
   // 🥣 INGREDIENTES
-  const ingredientsName = Array.isArray(req.body.ingredientsName)
-    ? req.body.ingredientsName
-    : req.body.ingredientsName
-    ? [req.body.ingredientsName]
-    : [];
+  const ingredientsName = body.ingredientsName;
 
-  const ingredientsAmount = Array.isArray(req.body.ingredientsAmount)
-    ? req.body.ingredientsAmount
-    : req.body.ingredientsAmount
-    ? [req.body.ingredientsAmount]
-    : [];
+  const ingredientsAmount = body.ingredientsAmount;
 
   const ingredients = ingredientsName
     .map((name: string, index: number) => ({
@@ -345,21 +305,10 @@ export const updateRecipe = async (
   }
 
   // 🧩 === LÓGICA DE PASOS ACTUALIZADA ===
-  const stepTexts = Array.isArray(req.body.stepText)
-    ? req.body.stepText
-    : [req.body.stepText || ""];
-
-  const stepIds = Array.isArray(req.body.photoId)
-    ? req.body.photoId
-    : [req.body.photoId || ""];
-
-  const existingStepPhotos = Array.isArray(req.body.existingStepPhotos)
-    ? req.body.existingStepPhotos
-    : [req.body.existingStepPhotos || ""];
-
-  const hasNewPhotos = Array.isArray(req.body.hasNewPhoto)
-    ? req.body.hasNewPhoto
-    : [req.body.hasNewPhoto || "false"];
+  const stepTexts = body.stepText;
+  const stepIds = body.photoId;
+  const existingStepPhotos = body.existingStepPhotos;
+  const hasNewPhotos = body.hasNewPhoto;
 
   const stepFiles = files?.["stepPhotos[]"] || [];
 

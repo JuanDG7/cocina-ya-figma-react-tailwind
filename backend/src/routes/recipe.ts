@@ -1,50 +1,10 @@
 import { Router } from "express";
-import { body } from "express-validator";
 
 import * as recipeController from "../controllers/recipe";
 import upload from "../middleware/upload";
 import isAuth from "../middleware/is-auth";
-
-const createRecipeValidators = [
-  body("titulo")
-    .trim()
-    .notEmpty()
-    .withMessage("título es requerido")
-    .isLength({ min: 3, max: 100 })
-    .withMessage("El titulo debe tener 3 y 100 caracteres"),
-  body("calorias")
-    .trim()
-    .notEmpty()
-    .withMessage("las calorias son obligatorias")
-    .bail()
-    .customSanitizer((v) =>
-      String(v)
-        .replace(",", ".")
-        .replace(/[^\d.]/g, "")
-    )
-    .toFloat()
-    .isFloat({ min: 0 })
-    .withMessage("calorias ≥ 0"),
-
-  body("tiempoMin")
-    .customSanitizer((v) => (v === "" ? undefined : v)) // "" -> undefined, "0" se mantiene
-    .optional() // ignora undefined y si queres ignorar tambien null-->{ nullable: true }
-    .customSanitizer((v) => String(v).replace(/[^\d]/g, "")) // limpia todo lo que no sean dígitos
-    .toInt() // convierte a número entero
-    .isInt({ min: 0 })
-    .withMessage("tiempoMin ≥ 0"), // valida que sea entero >= 0
-  body("porciones")
-    .optional()
-    .customSanitizer((v) => String(v).replace(/[^\d]/g, "")) // ← nuevo
-    .toInt()
-    .isInt({ min: 1, max: 100 })
-    .withMessage("porciones 1–100"),
-  body("stepText")
-    .isArray()
-    .withMessage("Los pasos deben ser un array")
-    .custom((arr) => arr.length > 0)
-    .withMessage("Debe incluir al menos un paso"),
-];
+import { validate } from "../middleware/validate";
+import { createRecipeSchema, updateRecipeSchema } from "../schemas/recipe";
 
 const router = Router();
 
@@ -62,7 +22,7 @@ router.post(
     { name: "mainPhoto", maxCount: 1 },
     { name: "stepPhotos[]", maxCount: 20 },
   ]),
-  createRecipeValidators,
+
   recipeController.createRecipe
 );
 
@@ -78,6 +38,7 @@ router.put(
     { name: "mainPhoto", maxCount: 1 },
     { name: "stepPhotos[]", maxCount: 20 },
   ]),
+  validate(updateRecipeSchema),
   recipeController.updateRecipe
 );
 
