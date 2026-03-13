@@ -253,7 +253,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return redirect("/homepage");
   } catch (error: any) {
     return {
-      error: error.response?.data?.message || "no fue posible autenticarse.",
+      error: error.response?.data?.message || "no fue posible autenticarse.", //axios en el catch siempre es ERROR.RESPONSE.DATA y en el fetch RESPONSE.DATA
     };
   }
 }

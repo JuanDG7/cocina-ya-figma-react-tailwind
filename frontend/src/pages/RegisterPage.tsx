@@ -19,7 +19,7 @@ type ResponseSuccess = {
 type ResponseError = {
   status: "error";
   message: string;
-  data?: { msg: string; param: string; location: string }[] | null;
+  data?: { message?: string; path?: (string | number)[] }[] | null;
 };
 
 type RegisterActionResponse = ResponseSuccess | ResponseError;
@@ -36,7 +36,9 @@ export default function RegisterPage() {
       {data?.status === "error" && data.data && (
         <ul className="text-red-500 text-sm mt-2 space-y-1">
           {data.data.map((err) => (
-            <li key={err.param}>{err.msg}</li>
+            <li key={err.path?.join(".") || crypto.randomUUID()}>
+              {err.message}
+            </li>
           ))}
         </ul>
       )}

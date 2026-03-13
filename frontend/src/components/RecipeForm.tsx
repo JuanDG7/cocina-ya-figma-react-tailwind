@@ -24,7 +24,7 @@ type RecipeFormProps = {
 
 type ActionData = {
   message?: string;
-  data?: { msg?: string }[];
+  data?: { message?: string; path?: (string | number)[] }[];
 };
 
 export default function RecipeForm({ data, method }: RecipeFormProps) {
@@ -45,7 +45,7 @@ export default function RecipeForm({ data, method }: RecipeFormProps) {
         {errores.length > 0 && (
           <ul className="text-red-900 mb-4">
             {errores.map((err, i) => (
-              <li key={i}>{err.msg}</li>
+              <li key={i}>{err.message}</li>
             ))}
           </ul>
         )}

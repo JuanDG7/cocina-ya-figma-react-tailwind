@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import User from "../models/user";
 import type { Request, Response, NextFunction } from "express";
 import type { IUser } from "../models/user";
+import { SignUpInput } from "../schemas/auth";
 dotenv.config();
 
 export const signUp = async (
@@ -12,22 +13,30 @@ export const signUp = async (
   res: Response,
   next: NextFunction
 ) => {
-  const errors = validationResult(req);
   try {
-    if (!errors.isEmpty()) {
+    const body: SignUpInput = req.body;
+
+    const email = body.email;
+
+    const password = body.password;
+    const confirmPassword = body.confirmPassword;
+    const status = body.status;
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
       const error = new Error("Validation failed") as Error & {
         statusCode?: number;
         data?: unknown;
       };
       error.statusCode = 422;
-      error.data = errors.array();
-      return next(error); // ✅ no rompe el flujo, pasa al manejador global
+      error.data = [
+        {
+          message: "Este email ya existe en la base de datos",
+          path: ["email"],
+        },
+      ];
+      return next(error);
     }
-    //esto de toLowerCase y trim se hace en la validacion ya sea en zod o express validtor no aqui....
-    const email = req.body.email.toLowerCase().trim();
-    const password = req.body.password;
-    const confirmPassword = req.body.confirmPassword;
-    const status = req.body.status;
 
     const hashedPw = await bcryptjs.hash(password, 12);
 
