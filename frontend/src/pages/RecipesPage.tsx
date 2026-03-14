@@ -11,7 +11,7 @@ import RecipeList from "../components/RecipeList";
 
 import IconLeftArrow from "../assets/icons/icon-left-arrow.svg";
 import EditIcon from "../assets/icons/icon-edit-document.svg";
-import { getToken } from "../util/auth";
+
 import api from "../lib/axios";
 
 type RecipesLoaderData = {

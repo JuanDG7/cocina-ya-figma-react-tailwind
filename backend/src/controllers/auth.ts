@@ -1,4 +1,3 @@
-import { validationResult } from "express-validator";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";

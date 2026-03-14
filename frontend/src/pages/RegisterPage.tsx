@@ -10,39 +10,29 @@ import IconLeftArrow from "../assets/icons/icon-left-arrow.svg";
 import TermsCheckbox from "../components/TermsCheckbox";
 import api from "../lib/axios";
 
-type ResponseSuccess = {
-  status: "success";
+type ZodIssue = {
+  path: (string | number)[];
   message: string;
-  userId: string;
 };
 
 type ResponseError = {
-  status: "error";
-  message: string;
-  data?: { message?: string; path?: (string | number)[] }[] | null;
+  error: string;
+  data?: ZodIssue[];
 };
-
-type RegisterActionResponse = ResponseSuccess | ResponseError;
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [agreed, setAgreed] = useState(false);
-  const data = useActionData() as RegisterActionResponse;
+  const actionData = useActionData<ResponseError>();
 
   const navigate = useNavigate();
 
+  const fieldErrors = Object.fromEntries(
+    (actionData?.data || []).map((issue) => [issue.path[0], issue.message])
+  );
+
   return (
     <>
-      {data?.status === "error" && data.data && (
-        <ul className="text-red-500 text-sm mt-2 space-y-1">
-          {data.data.map((err) => (
-            <li key={err.path?.join(".") || crypto.randomUUID()}>
-              {err.message}
-            </li>
-          ))}
-        </ul>
-      )}
-
       <main className="w-full mx-auto px-10  md:max-w-[520px] lg:max-w-[640px] md:bg-white/40 md:rounded-3xl md:shadow-sm lg:bg-white/60 lg:backdrop-blur ">
         <header className="font-raleway text-[24px] text-center pt-19 font-semibold">
           <div className=" flex justify-between items-center">
@@ -79,7 +69,11 @@ export default function RegisterPage() {
                 autoComplete="name"
               />
             </div>
-
+            {fieldErrors.nombre && (
+              <p className="text-red-500 text-sm mt-2 min-h-[20px]">
+                {fieldErrors.nombre}
+              </p>
+            )}
             <div className="">
               {/* EMAIL*/}
               {/* EXAMPLE@GMAIL.COM*/}
@@ -98,7 +92,11 @@ export default function RegisterPage() {
                 autoCorrect="off"
               />
             </div>
-
+            {fieldErrors.email && (
+              <p className="text-red-500 text-sm mt-2 min-h-[20px]">
+                {fieldErrors.email}
+              </p>
+            )}
             {/* Password*/}
             {/* ********************************/}
             <div className="">
@@ -130,7 +128,11 @@ export default function RegisterPage() {
                 </button>
               </div>
             </div>
-
+            {fieldErrors.password && (
+              <p className="text-red-500 text-sm mt-2 min-h-[20px]">
+                {fieldErrors.password}
+              </p>
+            )}
             {/* Confirmar Password*/}
             {/* ********************************/}
             <div className="">
@@ -163,6 +165,11 @@ export default function RegisterPage() {
                 </button>
               </div>
             </div>
+            {fieldErrors.confirmPassword && (
+              <p className="text-red-500 text-sm mt-2 min-h-[20px]">
+                {fieldErrors.confirmPassword}
+              </p>
+            )}
           </div>
           {/* Agree with Terms & Condition */}
           <TermsCheckbox
@@ -176,6 +183,11 @@ export default function RegisterPage() {
           >
             Crear Cuenta
           </button>
+          {actionData?.error && !actionData.data?.length && (
+            <p className="text-red-500 text-center text-sm mt-3">
+              {actionData.error}
+            </p>
+          )}
         </Form>
         {/*  ----------------O INICIA SESION CON---------------------------- */}
         <div className="flex items-center gap-4 mb-8">
@@ -238,64 +250,13 @@ export default function RegisterPage() {
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
 
-  // const data = Object.fromEntries(formData.entries());   <---   ESTO ES SOLAMENTE SI QUIERO HACER VALIDACION MANUAL
-
-  // // Validación simple antes de enviar
-  // if (!data.email || !data.password || !data.nombre) {
-  //   throw new Response("Faltan campos obligatorios", { status: 400 });
-  // }
-
-  // const response = await fetch("http://localhost:8080/auth/signup", {
-  //   method: "PUT",
-  //   headers: { "Content-Type": "application/json" },
-  //   body: JSON.stringify({
-  //     name: data.nombre,
-  //     email: data.email,
-  //     password: data.password,
-  //   }),
-  // });
-
   try {
     await api.put("/auth/signup", formData);
     return redirect("/");
   } catch (error: any) {
-    return { status: "error", ...error.response?.data } as ResponseError;
+    return {
+      error: error.response?.data?.message || "No fue posible crear la cuenta.",
+      data: error.response?.data?.data || [],
+    };
   }
 }
-
-// export async function action2({ request }: ActionFunctionArgs) {
-
-//   const formData = await request.formData();
-
-//   // const data = Object.fromEntries(formData.entries());   <---   ESTO ES SOLAMENTE SI QUIERO HACER VALIDACION MANUAL
-
-//   // // Validación simple antes de enviar
-//   // if (!data.email || !data.password || !data.nombre) {
-//   //   throw new Response("Faltan campos obligatorios", { status: 400 });
-//   // }
-
-//   // const response = await fetch("http://localhost:8080/auth/signup", {
-//   //   method: "PUT",
-//   //   headers: { "Content-Type": "application/json" },
-//   //   body: JSON.stringify({
-//   //     name: data.nombre,
-//   //     email: data.email,
-//   //     password: data.password,
-//   //   }),
-//   // });
-
-//   const response = await fetch("http://localhost:8080/auth/signup", {
-//     method: "PUT",
-//     body: formData,
-//   });
-
-//   if (!response.ok) {
-//     const errorData = await response.json();
-//     return { status: "error", ...errorData } as ResponseError;
-//   }
-
-//   // const data1 = await response.json();
-//   return redirect("/");
-// }
-
-//LO QUE ESTA ARRIBA ES SIN IMPLEMENTAR AXIOS!!!!

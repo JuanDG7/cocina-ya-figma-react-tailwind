@@ -9,21 +9,29 @@ import logoWebp from "../assets/logo-cocinaya.webp";
 import logoPng from "../assets/logo-cocinaya.png";
 import api from "../lib/axios";
 
-type ResponseSuccess = {
-  token: string;
-  userId: string;
+type ZodIssue = {
+  path: (string | number)[];
+  message: string;
 };
 
 type ResponseError = {
   error: string;
-  data?: string;
+  data?: ZodIssue[];
 };
-
-type LoginPageActionResponse = ResponseSuccess | ResponseError;
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const actionData = useActionData<LoginPageActionResponse>();
+  const actionData = useActionData<ResponseError>();
+
+  const fieldErrors =
+    "error" in (actionData || {})
+      ? Object.fromEntries(
+          (actionData?.data || []).map((issue) => [
+            issue.path[0],
+            issue.message,
+          ])
+        )
+      : {};
 
   return (
     <>
@@ -75,6 +83,11 @@ export default function LoginPage() {
                 autoCorrect="off"
                 autoComplete="username"
               />
+              {fieldErrors.email && (
+                <p className="text-red-500 text-sm mt-2 min-h-[20px]">
+                  {fieldErrors.email}
+                </p>
+              )}
             </div>
             {/* Password*/}
             {/* ********************************/}
@@ -106,6 +119,11 @@ export default function LoginPage() {
                   />
                 </button>
               </div>
+              {fieldErrors.password && (
+                <p className="text-red-500 text-sm mt-2 min-h-[20px]">
+                  {fieldErrors.password}
+                </p>
+              )}
             </div>
           </div>
           {/*                                          Olvidate tu contraseña */}
@@ -126,9 +144,9 @@ export default function LoginPage() {
             Iniciar sesión
           </button>
           {/*                                           POSIBLE MENSAJE DE ERROR DE AUTHENTICATION */}{" "}
-          {"error" in (actionData || {}) && (
+          {actionData?.error && !actionData.data?.length && (
             <p className="text-red-500 text-center text-sm mt-3">
-              {(actionData as ResponseError).error}
+              {actionData.error}
             </p>
           )}
         </Form>
@@ -253,7 +271,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return redirect("/homepage");
   } catch (error: any) {
     return {
-      error: error.response?.data?.message || "no fue posible autenticarse.", //axios en el catch siempre es ERROR.RESPONSE.DATA y en el fetch RESPONSE.DATA
+      error: error.response?.data?.message || "no fue posible autenticarse.",
+      data: error.response?.data?.data || [],
     };
   }
 }
