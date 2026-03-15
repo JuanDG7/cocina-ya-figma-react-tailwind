@@ -22,9 +22,14 @@ type RecipeFormProps = {
   method: "put" | "post";
 };
 
-type ActionData = {
+type ZodIssue = {
+  path: (string | number)[];
+  message: string;
+};
+
+type ResponseError = {
   message?: string;
-  data?: { message?: string; path?: (string | number)[] }[];
+  data?: ZodIssue[];
 };
 
 export default function RecipeForm({ data, method }: RecipeFormProps) {
@@ -33,21 +38,28 @@ export default function RecipeForm({ data, method }: RecipeFormProps) {
   const submit = useSubmit();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
-  const actionData = useActionData() as ActionData | undefined;
-  const errores = Array.isArray(actionData?.data) ? actionData.data : [];
-  console.log("📥 Respuesta èn el Frontend:", errores);
+  const actionData = useActionData<ResponseError>();
+
+  const fieldErrors = Object.fromEntries(
+    (actionData?.data || [])
+      .filter((issue) => issue.path?.length)
+      .map((issue) => [issue.path.join("."), issue.message])
+  );
+
+  const globalError =
+    actionData?.message && !(actionData?.data?.length ?? 0 > 0)
+      ? actionData.message
+      : null;
 
   return (
     <div className="">
       {/* FORMULARIO*/}
       <Form method={method} ref={formRef} encType="multipart/form-data">
-        {/* Lista de errores */}
-        {errores.length > 0 && (
-          <ul className="text-red-900 mb-4">
-            {errores.map((err, i) => (
-              <li key={i}>{err.message}</li>
-            ))}
-          </ul>
+        {/*Error general*/}
+        {globalError && (
+          <div className="w-[95%] text-red-600 text-sm bg-red-50 border border-red-200 p-3 rounded-md">
+            {globalError}
+          </div>
         )}
         <div className="flex flex-col gap-y-8 justify-center items-center w-full border border-black/20 rounded-2xl overflow-hidden shadow-[0_0px_3px_0_rgba(0,0,0,0.75)]">
           {/* === FOTO: botón gigante clickeable === */}
@@ -66,6 +78,11 @@ export default function RecipeForm({ data, method }: RecipeFormProps) {
               defaultValue={data ? data.titulo : ""}
               title="Ingrese un titulo "
             />
+            {fieldErrors.titulo && (
+              <p className="text-red-500 text-sm mt-2 min-h-[20px]">
+                {fieldErrors.titulo}
+              </p>
+            )}
           </div>
           {/* MÉTRICAS: kcal · minutos · porciones */}
           <div className="w-[95%] grid grid-cols-3 gap-3">
@@ -84,6 +101,11 @@ export default function RecipeForm({ data, method }: RecipeFormProps) {
                 title="Ingrese solo numeros (ej:590) "
                 defaultValue={data ? data.calorias : ""}
               />
+              {fieldErrors.calorias && (
+                <p className="text-red-500 text-sm mt-2 min-h-[20px]">
+                  {fieldErrors.calorias}
+                </p>
+              )}
             </div>
 
             <div>
@@ -101,6 +123,11 @@ export default function RecipeForm({ data, method }: RecipeFormProps) {
                 title="Ingrese solo numeros (ej:30) "
                 defaultValue={data ? data.tiempoMin : ""}
               />
+              {fieldErrors.tiempoMin && (
+                <p className="text-red-500 text-sm mt-2 min-h-[20px]">
+                  {fieldErrors.tiempoMin}
+                </p>
+              )}
             </div>
 
             <div>
@@ -118,6 +145,11 @@ export default function RecipeForm({ data, method }: RecipeFormProps) {
                 title="Ingrese solo numeros (ej:5) "
                 defaultValue={data ? data.porciones : ""}
               />
+              {fieldErrors.porciones && (
+                <p className="text-red-500 text-sm mt-2 min-h-[20px]">
+                  {fieldErrors.porciones}
+                </p>
+              )}
             </div>
           </div>
 
@@ -133,13 +165,24 @@ export default function RecipeForm({ data, method }: RecipeFormProps) {
               className="input min-h-[150px]"
               defaultValue={data ? data.descripcion : ""}
             />
+            {fieldErrors.descripcion && (
+              <p className="text-red-500 text-sm mt-2 min-h-[20px]">
+                {fieldErrors.descripcion}
+              </p>
+            )}
           </div>
           {/*Categoria*/}
-          <CategorySelector recipe={data} />
+          <CategorySelector recipe={data} fieldError={fieldErrors.categoria} />
           {/* INGREDIENTES*/}
-          <IngredientList initialIngredients={data?.ingredients || []} />
+          <IngredientList
+            initialIngredients={data?.ingredients || []}
+            fieldErrors={fieldErrors}
+          />
           {/* PASOS para preparar */}
-          <StepsList initialSteps={data?.steps || []} />
+          <StepsList
+            initialSteps={data?.steps || []}
+            fieldErrors={fieldErrors}
+          />
 
           <div className="w-[95%] space-y-5 pb-10">
             {" "}
@@ -154,6 +197,11 @@ export default function RecipeForm({ data, method }: RecipeFormProps) {
               name="consejos"
               defaultValue={data ? data.consejos : ""}
             />
+            {fieldErrors.consejos && (
+              <p className="text-red-500 text-sm mt-2 min-h-[20px]">
+                {fieldErrors.consejos}
+              </p>
+            )}
             <div className="flex gap-4">
               <button
                 type="button"
@@ -203,7 +251,7 @@ export default function RecipeForm({ data, method }: RecipeFormProps) {
 export async function action({
   request,
   params,
-}: ActionFunctionArgs): Promise<Response | ActionData> {
+}: ActionFunctionArgs): Promise<Response | ResponseError> {
   const formData = await request.formData(); // RAW (string o null)
 
   let url = "/recipe";
@@ -218,64 +266,14 @@ export async function action({
     const { data } = await api({
       url: url,
       method: request.method,
-
       data: formData,
     });
     return redirect("/homepage");
   } catch (error: any) {
-    if (error.response?.status === 422) {
-      return error.response.data;
-    }
-    throw new Response(
-      JSON.stringify({ message: "error en RecipeForm action function" }),
-      {
-        status: error.response?.status || 500,
-      }
-    );
+    return {
+      message:
+        error.response?.data?.message || "No fue posible guardar la receta.",
+      data: error.response?.data?.data || [],
+    };
   }
 }
-
-// export async function action({
-//   request,
-//   params,
-// }: ActionFunctionArgs): Promise<Response | ActionData> {
-//   const formData = await request.formData(); // RAW (string o null)
-
-//   const token = localStorage.getItem("token");
-//   let url = "http://localhost:8080/recipe";
-
-//   console.log("🧾 METHOD ES:", request.method);
-//   if (request.method === "PUT") {
-//     const eventId = params.recipeId;
-//     url = "http://localhost:8080/recipe/" + eventId;
-//   }
-
-//   const response = await fetch(url, {
-//     method: request.method,
-//     headers: { Authorization: "Bearer " + token },
-//     body: formData,
-//   });
-
-//   // if (response.status === 422) {
-//   //   //si vuelve un error de validacion del backend, va a useActionData() en el RecipeForm
-//   //   console.log(response);
-
-//   //   return response;
-//   // }
-
-//   if (response.status === 422) {
-//     //si vuelve un error de validacion del backend, va a useActionData() en el RecipeForm
-//     const actionData: ActionData = await response.json();
-
-//     return actionData;
-//   }
-
-//   if (!response.ok) {
-//     throw new Response(JSON.stringify({ message: "error en RecipeForm" }), {
-//       status: response.status,
-//     });
-//   }
-//   return redirect("/homepage");
-// }
-
-// lo de arriba es la version antigua sin AXIOS

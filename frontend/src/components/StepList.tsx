@@ -14,9 +14,13 @@ type initialStepsProps = {
     text: string;
     photos: string[];
   }[];
+  fieldErrors?: Record<string, string>;
 };
 
-export default function StepsList({ initialSteps = [] }: initialStepsProps) {
+export default function StepsList({
+  initialSteps = [],
+  fieldErrors,
+}: initialStepsProps) {
   const [steps, setSteps] = useState<StepsState[]>(
     initialSteps.length > 0
       ? initialSteps.map((s) => ({
@@ -31,23 +35,6 @@ export default function StepsList({ initialSteps = [] }: initialStepsProps) {
         }))
       : [{ id: uuidv4(), text: "", photo: null }]
   );
-
-  // const [steps, setSteps] = useState<StepsState[]>(
-  //   initialSteps.length > 0
-  //     ? initialSteps.map((s) => ({
-  //         id: s.id || uuidv4(), // id estable del paso
-  //         text: s.text || "",
-  //         photo: s.photos?.[0]
-  //           ? {
-  //               file: null,
-  //               preview: s.photos[0].startsWith("blob:")
-  //                 ? s.photos[0]
-  //                 : `http://localhost:8080/${s.photos[0]}`,
-  //             }
-  //           : null,
-  //       }))
-  //     : [{ id: uuidv4(), text: "", photo: null }]
-  // );
 
   const allURLs = useRef<Set<string>>(new Set());
   useEffect(() => {
@@ -121,6 +108,7 @@ export default function StepsList({ initialSteps = [] }: initialStepsProps) {
             onRemove={removeStep}
             onPickPhoto={pickPhoto}
             onRemovePhoto={removePhoto}
+            error={fieldErrors?.[`stepText.${i}`]}
           />
         </div>
       ))}

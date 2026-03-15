@@ -170,12 +170,10 @@ export const createRecipe = async (
   const ingredientsName = body.ingredientsName;
   const ingredientsAmount = body.ingredientsAmount;
 
-  const ingredients = ingredientsName
-    .map((name: string, index: number) => ({
-      name: String(name).trim(),
-      amount: String(ingredientsAmount[index] || "").trim(),
-    }))
-    .filter((x: { name: string; amount: string }) => x.name || x.amount);
+  const ingredients = ingredientsName.map((name: string, index: number) => ({
+    name: String(name).trim(),
+    amount: String(ingredientsAmount[index] || "").trim(),
+  }));
 
   // 🪄 6) Armar pasos por índice (1 foto por paso)
   const stepPhotos = files?.["stepPhotos[]"] || [];

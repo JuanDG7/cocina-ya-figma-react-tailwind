@@ -1,8 +1,12 @@
 type CategorySelectorProps = {
   recipe?: { categoria?: string };
+  fieldError?: string;
 };
 
-export default function CategorySelector({ recipe }: CategorySelectorProps) {
+export default function CategorySelector({
+  recipe,
+  fieldError,
+}: CategorySelectorProps) {
   return (
     <fieldset className="w-[95%]">
       <legend className="label">Categoría</legend>
@@ -98,6 +102,9 @@ export default function CategorySelector({ recipe }: CategorySelectorProps) {
           </label>
         </div>
       </div>
+      {fieldError && (
+        <p className="text-red-500 text-sm mt-2 min-h-[20px]">{fieldError}</p>
+      )}
     </fieldset>
   );
 }

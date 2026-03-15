@@ -11,6 +11,7 @@ type StepItemProps = {
   onRemove: (index: number) => void;
   onPickPhoto: (stepIndex: number, file: File | null) => void;
   onRemovePhoto: (stepIndex: number) => void;
+  error?: string;
 };
 
 export default function StepItem({
@@ -22,6 +23,7 @@ export default function StepItem({
   onRemove,
   onPickPhoto,
   onRemovePhoto,
+  error,
 }: StepItemProps) {
   const inputId = `photo-${index}`;
 
@@ -40,6 +42,7 @@ export default function StepItem({
               className="flex-1 placeholder-gray-400 focus:outline-none focus:ring-0"
               name="stepText[]"
             />
+            {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
             <button
               type="button"
               onClick={() => onRemove(index)}
