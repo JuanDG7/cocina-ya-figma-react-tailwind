@@ -11,6 +11,9 @@ const router = Router();
 //GET /recipe/recipes  //listar todas las recetas
 router.get("/recipes", isAuth, recipeController.getRecipes);
 
+//list latest 3 recipes
+router.get("/latest", isAuth, recipeController.getLatestRecipes);
+
 // GET /recipe/my-recipes //listar 1 receta
 router.get("/my-recipes", isAuth, recipeController.getMyRecipes);
 

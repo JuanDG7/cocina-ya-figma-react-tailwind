@@ -64,7 +64,7 @@ export default function MyRecipesPage() {
           {recipes.map((recipe) => (
             <li
               key={recipe._id}
-              className="w-full max-w-[240px] rounded-2xl border border-black/5 bg-white p-3 shadow-[0_0_6px_rgba(0,0,0,0.08)]"
+              className="w-full max-w-[280px] rounded-2xl border border-black/5 bg-white p-3 shadow-[0_0_6px_rgba(0,0,0,0.08)]"
             >
               <div className="overflow-hidden rounded-[20px]">
                 <img

@@ -4,8 +4,13 @@ import SearchIcon from "../assets/icons/icon-search.svg";
 import UserIcon from "../assets/icons/icon-user.svg";
 import CategoriesSection from "../components/CategoriesSection";
 import PopularRecipesSection from "../components/PopularRecipesSection";
+import { useLoaderData } from "react-router-dom";
+import { type Recipe } from "../types/recipe";
+import api from "../lib/axios";
+import { LoaderFunctionArgs } from "react-router-dom";
 
 export default function HomePage() {
+  const recipes = useLoaderData() as Recipe[];
   return (
     <>
       <div>
@@ -49,9 +54,16 @@ export default function HomePage() {
         </section>
         <section className="mt-5">
           {/* Populares */}{" "}
-          <PopularRecipesSection>Recetas Populares</PopularRecipesSection>{" "}
+          <PopularRecipesSection recipes={recipes}>
+            Recetas Populares
+          </PopularRecipesSection>{" "}
         </section>
       </div>
     </>
   );
+}
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const { data } = await api.get("/recipe/latest");
+  return data.recipes as Recipe[];
 }

@@ -54,7 +54,7 @@ export default function RecipeItem({ recipe }: RecipeItemProps) {
         </div>
       </div>
       {/*INGREDIENTES*/}
-      <div className="px-4">{recipe.descripcion}</div>
+      <div className="px-4 break-all">{recipe.descripcion}</div>
 
       <h2 className="px-4 pt-6 text-[18px] font-medium">Ingredientes</h2>
 
@@ -94,7 +94,7 @@ export default function RecipeItem({ recipe }: RecipeItemProps) {
           </li>
         ))}
       </ol>
-      <div className="flex  gap-4 w-full mb-28">
+      <div className="flex  gap-4 w-full mb-14">
         <LinkButton
           to="#"
           onClick={() => setModalOpen(true)}

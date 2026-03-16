@@ -2,7 +2,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 import LoginPage, { action as loginAction } from "./pages/LoginPage";
 import RegisterPage, { action as authAction } from "./pages/RegisterPage";
-import HomePage from "./pages/HomePage";
+import HomePage, { loader as homePageLoader } from "./pages/HomePage";
 import RecipeNew from "./pages/RecipeNew";
 import RecipeEdit from "./pages/RecipeEdit";
 import RecipeDetail, {
@@ -44,7 +44,7 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     loader: requireAuth,
     children: [
-      { path: "homepage", element: <HomePage /> },
+      { path: "homepage", element: <HomePage />, loader: homePageLoader },
 
       { path: "favorite-recipe", element: <FavoriteRecipePage /> },
       {

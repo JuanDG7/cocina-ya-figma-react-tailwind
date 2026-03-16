@@ -51,6 +51,8 @@ export default function RecipeForm({ data, method }: RecipeFormProps) {
       ? actionData.message
       : null;
 
+  const isEditMode = method === "put";
+
   return (
     <div className="">
       {/* FORMULARIO*/}
@@ -202,7 +204,7 @@ export default function RecipeForm({ data, method }: RecipeFormProps) {
                 {fieldErrors.consejos}
               </p>
             )}
-            <div className="flex gap-4">
+            <div className="flex gap-4 mt-10">
               <button
                 type="button"
                 className="flex-1 bg-primary py-[12px] text-white rounded-full font-worksans font-[500] text-[16px]"
@@ -216,7 +218,7 @@ export default function RecipeForm({ data, method }: RecipeFormProps) {
                 }}
                 className="flex-1 bg-secondary py-[12px] text-white rounded-full font-worksans font-[500] text-[16px]"
               >
-                Agregar receta
+                {isEditMode ? "Editar receta" : "Agregar receta"}
               </button>
             </div>
           </div>

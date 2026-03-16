@@ -1,6 +1,7 @@
 import RecipeCard from "./RecipeCard";
 
 import { Link } from "react-router-dom";
+import { type Recipe } from "../types/recipe";
 
 //TODO mostrar las recetas que realmente estan en la base de datos y no placeholders de comida como ahora esta pasta alfredo cremosa , hamburguesa casera, ramen express
 type Meal = {
@@ -14,6 +15,7 @@ type Meal = {
 type PopularRecipesSectionProps = {
   children: React.ReactNode;
   viewAllTo?: string;
+  recipes: Recipe[];
 };
 // Dummy data; replace with your real items
 const sample: Meal[] = [
@@ -43,6 +45,7 @@ const sample: Meal[] = [
 export default function PopularRecipesSection({
   children,
   viewAllTo = "/popular",
+  recipes,
 }: PopularRecipesSectionProps) {
   return (
     <section aria-labelledby="popular-heading" className="mt-6">
@@ -69,9 +72,9 @@ export default function PopularRecipesSection({
           touch-pan-x overscroll-x-contain [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:grid lg:grid-cols-3 lg:gap-6 lg:overflow-visible lg:snap-none"
         aria-label="Listado de recetas populares"
       >
-        {sample.map((meal) => (
-          <li key={meal.id} className="snap-start">
-            <RecipeCard meal={meal} />
+        {recipes.map((recipe) => (
+          <li key={recipe._id} className="snap-start">
+            <RecipeCard recipe={recipe} />
           </li>
         ))}
       </ul>

@@ -13,6 +13,7 @@ type RecipeLoaderData = {
 export default function RecipeEdit() {
   const navigate = useNavigate();
   const data = useRouteLoaderData("recipe") as RecipeLoaderData;
+
   return (
     <>
       {/* Frame  */}

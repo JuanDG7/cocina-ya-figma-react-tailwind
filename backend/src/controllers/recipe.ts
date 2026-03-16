@@ -65,6 +65,29 @@ export const getRecipes = async (
     next(error);
   }
 };
+
+//list 3 newest recipe
+export const getLatestRecipes = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const recipes = await Recipe.find()
+      .populate("creator")
+      .sort({ createdAt: -1 })
+      .limit(3);
+
+    res.status(200).json({
+      message: "Latest recipes fetched successfully.",
+      recipes,
+    });
+  } catch (err) {
+    const error = err as Error & { statusCode?: number };
+    if (!error.statusCode) error.statusCode = 500;
+    next(error);
+  }
+};
 //My Recipes
 export const getMyRecipes = async (
   req: Request,
